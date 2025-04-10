@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../home/pages/homepage.dart';
-// import '../cart/cart_page.dart';
-// import '../history/history_page.dart';
-// import '../profile/profile_page.dart';
+import '../cart/cart_page.dart';
+import '../history/history_page.dart';
+import '../profile/profile_page.dart';
 
 class BottomNav extends StatelessWidget {
   const BottomNav({super.key});
@@ -14,9 +14,9 @@ class BottomNav extends StatelessWidget {
 
     final List<Widget> pages = [
       const HomePage(),
-      // const CartPage(),
-      // const HistoryPage(),
-      // const ProfilePage(),
+      const CartPage(),
+      const HistoryPage(),
+      const ProfilePage(),
     ];
 
     return Scaffold(

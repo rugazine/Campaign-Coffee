@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:campaign_coffee/routes/app_routes.dart';
-// import 'package:campaign_coffee/pages/home/pages/menu_page.dart';
+import 'package:campaign_coffee/routes/app_routes.dart';
+import 'package:campaign_coffee/pages/home/pages/menu_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 // You can define the color as a constant at the top of the file
@@ -121,8 +121,7 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Get.to(() => const //MenuPage
-                          ()),
+                          onPressed: () => Get.to(() => const MenuPage()),
                           child: const Text(
                             'See All',
                             style: TextStyle(
@@ -320,8 +319,7 @@ class HomePage extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => //MenuPage
-        (initialCategory: label));
+        Get.to(() => MenuPage(initialCategory: label));
       },
       child: Column(
         children: [
@@ -359,7 +357,7 @@ class HomePage extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        // Get.toNamed(AppRoutes.detail);
+        Get.toNamed(AppRoutes.detail);
       },
       child: Container(
         decoration: BoxDecoration(

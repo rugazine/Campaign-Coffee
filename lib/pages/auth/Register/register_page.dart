@@ -1,6 +1,6 @@
+import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import '../../../routes/app_routes.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -84,7 +84,7 @@ class RegisterPage extends StatelessWidget {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Get.offAllNamed(AppRoutes.bottomnav);
+                      Get.offAllNamed(AppRoutes.bottomnav);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(8, 76, 172, 1),
@@ -111,7 +111,7 @@ class RegisterPage extends StatelessWidget {
                 // Already have an account
                 Center(
                   child: GestureDetector(
-                    // onTap: () => Get.toNamed(AppRoutes.login),
+                    onTap: () => Get.toNamed(AppRoutes.login),
                     child: RichText(
                       text: const TextSpan(
                         text: 'Already have an account? ',

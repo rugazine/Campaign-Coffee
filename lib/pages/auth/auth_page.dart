@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -59,7 +60,7 @@ class AuthPage extends StatelessWidget {
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Get.toNamed(AppRoutes.login);
+                            Get.toNamed(AppRoutes.login);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -91,7 +92,7 @@ class AuthPage extends StatelessWidget {
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Get.toNamed(AppRoutes.register);
+                            Get.toNamed(AppRoutes.register);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),

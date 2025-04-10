@@ -1,4 +1,5 @@
-// import 'package:campaign_coffee/routes/app_routes.dart';
+
+import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -216,7 +217,7 @@ class _MenuPageState extends State<MenuPage> {
                       child: InkWell(
                         onTap: () => 
                         Get.toNamed
-                        // (AppRoutes.detail)
+                        (AppRoutes.detail)
                         ,
                         borderRadius: BorderRadius.circular(12),
                         child: Padding(

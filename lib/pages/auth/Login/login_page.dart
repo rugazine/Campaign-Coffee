@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -171,8 +172,8 @@ class LoginPage extends StatelessWidget {
                   onPressed: () {
                     // Add login logic here
                     // After successful login:
-                    // Get.offAllNamed(AppRoutes
-                    //     .bottomnav); // Navigate to bottom navigation after successful login
+                    Get.offAllNamed(AppRoutes
+                        .bottomnav); // Navigate to bottom navigation after successful login
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: mainBlue,
@@ -198,7 +199,7 @@ class LoginPage extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    // Get.toNamed(AppRoutes.register);
+                    Get.toNamed(AppRoutes.register);
                   },
                   child: const Text(
                     'Create new account',
