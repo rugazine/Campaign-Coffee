@@ -89,12 +89,12 @@ class ProfilePage extends StatelessWidget {
                     child: const CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.white,
-                      backgroundImage: AssetImage('assets/images/barista.png'),
+                      backgroundImage: AssetImage('assets/images/kyrie.jpg'),
                     ),
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'John Doe',
+                    'Stephen Ruga',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'johndoe@example.com',
+                    'stephenruga@gmail.com',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
