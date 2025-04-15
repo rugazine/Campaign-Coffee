@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/pages/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/routes/app_routes.dart';
@@ -8,8 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 const mainBlue = Color.fromARGB(255, 8, 76, 172);
 const fontPoppins = 'Poppins';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePage extends GetView<HomeController> {
+  HomePage({super.key}) {
+    Get.put(HomeController());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +44,8 @@ class HomePage extends StatelessWidget {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Row(
+                            children: [
+                              const Row(
                                 children: [
                                   Icon(
                                     Icons.waving_hand_outlined,
@@ -55,21 +58,21 @@ class HomePage extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 10,
-                                      fontWeight: FontWeight.w100,
+                                      fontWeight: FontWeight.w300,
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 4),
-                              Text(
-                                'Ruga Zinedine',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Poppins',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                              Obx(() => Text(
+                                    controller.userName.value,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  )),
                             ],
                           ),
                         ],
@@ -89,11 +92,14 @@ class HomePage extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            _buildPromoCard(),
-                            const SizedBox(width: 16),
-                            _buildPromoCard(),
-                            const SizedBox(width: 16),
-                            _buildPromoCard(),
+                            ...controller.promoCards
+                                .map((promo) => Row(
+                                      children: [
+                                        _buildPromoCard(),
+                                        const SizedBox(width: 16),
+                                      ],
+                                    ))
+                                .toList(),
                           ],
                         ),
                       ),
@@ -133,23 +139,14 @@ class HomePage extends StatelessWidget {
 
                     // Category Icons
                     const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildCategoryItem(
-                          label: 'Coffee',
-                        ),
-                        _buildCategoryItem(
-                          label: 'Non Coffee',
-                        ),
-                        _buildCategoryItem(
-                          label: 'Snack',
-                        ),
-                        _buildCategoryItem(
-                          label: 'Main Course',
-                        ),
-                      ],
-                    ),
+                    Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: controller.categories
+                              .map((category) => _buildCategoryItem(
+                                    label: category,
+                                  ))
+                              .toList(),
+                        )),
 
                     // Recommendation Section
                     const SizedBox(height: 20),
@@ -177,52 +174,22 @@ class HomePage extends StatelessWidget {
 
                     // Recommendation Grid
                     const SizedBox(height: 15),
-                    GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15,
-                      childAspectRatio: 0.75,
-                      children: [
-                        _buildProductCard(
-                          image: 'assets/images/choco_choco.jpg',
-                          name: 'Choco - Choco',
-                          category: 'Chocolate',
-                          price: 'Rp. 15000',
-                        ),
-                        _buildProductCard(
-                          image: 'assets/images/matcha_latte.jpg',
-                          name: 'Matcha Latte',
-                          category: 'Matcha',
-                          price: 'Rp. 15000',
-                        ),
-                        _buildProductCard(
-                          image: 'assets/images/taro_latte.jpg',
-                          name: 'Taro Latte',
-                          category: 'Taro',
-                          price: 'Rp. 15000',
-                        ),
-                        _buildProductCard(
-                          image: 'assets/images/red_velvet.jpg',
-                          name: 'Red Velvet',
-                          category: 'Red Velvet',
-                          price: 'Rp. 15000',
-                        ),
-                        _buildProductCard(
-                          image: 'assets/images/choco_choco.jpg',
-                          name: 'Choco - Choco',
-                          category: 'Chocolate',
-                          price: 'Rp. 15000',
-                        ),
-                        _buildProductCard(
-                          image: 'assets/images/matcha_latte.jpg',
-                          name: 'Matcha Latte',
-                          category: 'Matcha',
-                          price: 'Rp. 15000',
-                        ),
-                      ],
-                    ),
+                    Obx(() => GridView.count(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 15,
+                          crossAxisSpacing: 15,
+                          childAspectRatio: 0.75,
+                          children: controller.recommendedProducts
+                              .map((product) => _buildProductCard(
+                                    image: product['image']!,
+                                    name: product['name']!,
+                                    category: product['category']!,
+                                    price: product['price']!,
+                                  ))
+                              .toList(),
+                        )),
                     const SizedBox(height: 20),
                   ],
                 ),
