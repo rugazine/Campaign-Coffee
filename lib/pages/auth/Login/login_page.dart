@@ -1,247 +1,273 @@
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'login_controller.dart';
 
 const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginPage extends GetView<LoginController> {
+  LoginPage({super.key}) {
+    Get.put(LoginController());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 60,
-              ),
-              const Text(
-                'Login here',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: mainBlue,
-                  fontFamily: 'Poppins',
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: Form(
+          key: controller.formKey.value,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0,
+                MediaQuery.of(context).viewInsets.bottom + 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 60,
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Welcome back you\'ve\nbeen missed!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
+                const Text(
+                  'Login here',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: mainBlue,
                     fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 70),
-
-              // Username TextField
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  ),
                 ),
-                child: TextField(
+                const SizedBox(height: 20),
+                const Text(
+                  'Welcome back you\'ve\nbeen missed!',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontFamily: 'Poppins'),
-                  decoration: InputDecoration(
-                    hintText: 'Username',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Poppins',
-                      color: Colors.grey[400],
-                      fontSize: 15,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.person_outline,
-                      color: mainBlue,
-                      size: 22,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: mainBlue,
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Password TextField
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  obscureText: true,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontFamily: 'Poppins'),
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Poppins',
-                      color: Colors.grey[400],
-                      fontSize: 15,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: mainBlue,
-                      size: 22,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: mainBlue,
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
-                  ),
-                ),
-              ),
-              SizedBox(height: 14),
-
-              // Forgot Password
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Add forgot password logic here
-                  },
-                  child: const Text(
-                    'Forgot your password?',
-                    style: TextStyle(
-                        color: mainBlue,
-                        fontFamily: 'Poppins',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Sign in Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Add login logic here
-                    // After successful login:
-                    Get.offAllNamed(AppRoutes
-                        .bottomnav); // Navigate to bottom navigation after successful login
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: mainBlue,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Sign in',
-                    style: TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
                       fontSize: 16,
+                      color: Colors.black87,
                       fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 70),
+
+                // Username TextField
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'Poppins'),
+                    onChanged: controller.setUsername,
+                    validator: controller.validateUsername,
+                    decoration: InputDecoration(
+                      hintText: 'Username',
+                      hintStyle: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.grey[400],
+                        fontSize: 15,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.person_outline,
+                        color: mainBlue,
+                        size: 22,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: mainBlue,
+                          width: 1.5,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 40),
+                // Password TextField
+                Obx(() => Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: TextFormField(
+                        obscureText: !controller.isPasswordVisible.value,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontFamily: 'Poppins'),
+                        onChanged: controller.setPassword,
+                        validator: controller.validatePassword,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          hintStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.grey[400],
+                            fontSize: 15,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.lock_outline,
+                            color: mainBlue,
+                            size: 22,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isPasswordVisible.value
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: mainBlue,
+                            ),
+                            onPressed: controller.togglePasswordVisibility,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: mainBlue,
+                              width: 1.5,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
+                        ),
+                      ),
+                    )),
+                SizedBox(height: 14),
 
-              // Create new account
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Get.toNamed(AppRoutes.register);
-                  },
-                  child: const Text(
-                    'Create new account',
+                // Forgot Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Add forgot password logic here
+                    },
+                    child: const Text(
+                      'Forgot your password?',
+                      style: TextStyle(
+                          color: mainBlue,
+                          fontFamily: 'Poppins',
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Sign in Button
+                Obx(() => SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : controller.login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: mainBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Sign in',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                      ),
+                    )),
+
+                const SizedBox(height: 40),
+
+                // Create new account
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.register);
+                    },
+                    child: const Text(
+                      'Create new account',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 90),
+
+                // Or continue with
+                const Center(
+                  child: Text(
+                    'Or continue with',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: mainBlue,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 90),
-
-              // Or continue with
-              const Center(
-                child: Text(
-                  'Or continue with',
-                  style: TextStyle(
-                    color: mainBlue,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ),
+                // Social Login Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _socialLoginButton('assets/images/google.png'),
+                    const SizedBox(width: 20),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // Social Login Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _socialLoginButton('assets/images/google.png'),
-                  const SizedBox(width: 20),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _socialLoginButton(String iconPath) {

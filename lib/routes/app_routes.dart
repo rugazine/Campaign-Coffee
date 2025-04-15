@@ -25,43 +25,43 @@ class AppRoutes {
   static final routes = [
     GetPage(
       name: auth,
-      page: () => const AuthPage(),
+      page: () => AuthPage(),
     ),
     GetPage(
       name: login,
-      page: () => const LoginPage(),
+      page: () => LoginPage(),
     ),
     GetPage(
       name: register,
-      page: () => const RegisterPage(),
+      page: () => RegisterPage(),
     ),
     GetPage(
       name: home,
-      page: () => const HomePage(),
+      page: () =>  HomePage(),
     ),
     GetPage(
       name: detail,
-      page: () => const DetailPage(),
+      page: () =>  DetailPage(),
     ),
     GetPage(
       name: bottomnav,
-      page: () => const BottomNav(),
+      page: () =>  BottomNav(),
     ),
     GetPage(
       name: menu,
-      page: () => const MenuPage(),
+      page: () =>  MenuPage(),
     ),
     GetPage(
       name: history,
-      page: () => const HistoryPage(),
+      page: () =>  HistoryPage(),
     ),
     GetPage(
       name: profile,
-      page: () => const ProfilePage(),
+      page: () =>  ProfilePage(),
     ),
     GetPage(
       name: order,
-      page: () => const OrderPage(),
+      page: () =>  OrderPage(),
     ),
   ];
 }
