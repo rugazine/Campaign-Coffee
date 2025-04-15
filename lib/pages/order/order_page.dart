@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:campaign_coffee/pages/cart/controllers/cart_controller.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -15,13 +16,11 @@ class _OrderPageState extends State<OrderPage> {
   // Delivery method options
   final RxBool _isDelivery = true.obs;
 
-  // Product quantities
-  final RxInt _taroQuantity = 1.obs;
-  final RxInt _matchaQuantity = 1.obs;
+  // Get cart controller to access cart items
+  final CartController cartController = Get.find<CartController>();
 
-  // Calculate total price
-  int get _totalPrice =>
-      (_taroQuantity.value * 15000) + (_matchaQuantity.value * 16000);
+  // Calculate total price from cart items
+  double get _totalPrice => cartController.total;
 
   void _updateQuantity(RxInt quantity, bool isIncrement) {
     if (isIncrement) {
@@ -210,28 +209,124 @@ class _OrderPageState extends State<OrderPage> {
                   )),
 
               // Order Items
-              ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  // Taro Latte
-                  _buildOrderItem(
-                    'Taro Latte',
-                    'Rp 15000',
-                    'assets/images/taro_latte.jpg',
-                    _taroQuantity,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Matcha Latte
-                  _buildOrderItem(
-                    'Matcha Latte',
-                    'Rp 16000',
-                    'assets/images/matcha_latte.jpg',
-                    _matchaQuantity,
-                  ),
-                ],
+              const SizedBox(height: 30),
+              const Text(
+                'Your Order',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+              const SizedBox(height: 20),
+              // Cart Items
+              Obx(() => cartController.cartItems.isEmpty
+                  ? Center(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Your cart is empty',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'Poppins',
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: cartController.cartItems.length,
+                      itemBuilder: (context, index) {
+                        final item = cartController.cartItems[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                spreadRadius: 1,
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.asset(
+                                  item['image'],
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['name'],
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Rp ${item['price']}',
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    if (item['sugar'] != null ||
+                                        item['temperature'] != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          '${item['temperature'] ?? ''} ${item['sugar'] != null ? '• ${item['sugar']} sugar' : ''}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Quantity: ${item['quantity']}',
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )),
 
               const SizedBox(height: 16),
 
@@ -282,7 +377,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   ),
                   Obx(() => Text(
-                        'Rp. ${_totalPrice}',
+                        'Rp ${_totalPrice.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,
