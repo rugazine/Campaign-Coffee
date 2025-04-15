@@ -1,16 +1,11 @@
+import 'package:campaign_coffee/pages/home/pages/detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
-
-  @override
-  State<DetailPage> createState() => _DetailPageState();
-}
-
-class _DetailPageState extends State<DetailPage> {
-  String selectedSugar = 'Normal';
-  String selectedTemperature = 'Ice';
+class DetailPage extends GetView<DetailController> {
+  DetailPage({super.key}) {
+    Get.put(DetailController());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +25,15 @@ class _DetailPageState extends State<DetailPage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
-            onPressed: () {},
-          ),
+          Obx(() => IconButton(
+                icon: Icon(
+                  controller.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: controller.isFavorite ? Colors.red : Colors.black,
+                ),
+                onPressed: controller.toggleFavorite,
+              )),
         ],
       ),
       body: Stack(
@@ -162,11 +162,14 @@ class _DetailPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(left: 15),
                     child: Row(
                       children: [
-                        _buildSugarOption('Less', selectedSugar == 'Less'),
+                        Obx(() => _buildSugarOption(
+                            'Less', controller.selectedSugar == 'Less')),
                         const SizedBox(width: 12),
-                        _buildSugarOption('Normal', selectedSugar == 'Normal'),
+                        Obx(() => _buildSugarOption(
+                            'Normal', controller.selectedSugar == 'Normal')),
                         const SizedBox(width: 12),
-                        _buildSugarOption('Extra', selectedSugar == 'Extra'),
+                        Obx(() => _buildSugarOption(
+                            'Extra', controller.selectedSugar == 'Extra')),
                       ],
                     ),
                   ),
@@ -188,11 +191,11 @@ class _DetailPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(left: 15),
                     child: Row(
                       children: [
-                        _buildTemperatureOption(
-                            'Ice', selectedTemperature == 'Ice'),
+                        Obx(() => _buildTemperatureOption(
+                            'Ice', controller.selectedTemperature == 'Ice')),
                         const SizedBox(width: 12),
-                        _buildTemperatureOption(
-                            'Hot', selectedTemperature == 'Hot'),
+                        Obx(() => _buildTemperatureOption(
+                            'Hot', controller.selectedTemperature == 'Hot')),
                       ],
                     ),
                   ),
@@ -255,7 +258,7 @@ class _DetailPageState extends State<DetailPage> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: controller.addToCart,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 8, 76, 172),
                       padding: const EdgeInsets.symmetric(
@@ -286,11 +289,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Widget _buildSugarOption(String label, bool isSelected) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedSugar = label;
-        });
-      },
+      onTap: () => controller.setSugar(label),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         decoration: BoxDecoration(
@@ -317,11 +316,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Widget _buildTemperatureOption(String label, bool isSelected) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedTemperature = label;
-        });
-      },
+      onTap: () => controller.setTemperature(label),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         decoration: BoxDecoration(
