@@ -1,4 +1,3 @@
-
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,60 +34,119 @@ class _MenuPageState extends State<MenuPage> {
       'description': 'a latte recipe that is made with taro root, milk, and',
       'price': 'Rp15000',
       'image': 'assets/images/taro_latte.jpg',
+      'category': 'Non Coffee',
     },
     {
       'name': 'Matcha Latte',
       'description': 'green tea latte recipe with',
       'price': 'Rp15000',
       'image': 'assets/images/matcha_latte.jpg',
+      'category': 'Non Coffee',
     },
     {
       'name': 'Choco Choco',
       'description': 'with chocolate powder, milk',
       'price': 'Rp15000',
       'image': 'assets/images/choco_choco.jpg',
+      'category': 'Non Coffee',
     },
     {
       'name': 'Red Velvet',
       'description': 'a latte recipe that is made with red velvet, milk',
       'price': 'Rp15000',
       'image': 'assets/images/red_velvet.jpg',
+      'category': 'Non Coffee',
     },
     {
       'name': 'Matcha Oat',
       'description': 'green tea latte recipe with',
       'price': 'Rp15000',
       'image': 'assets/images/matcha_latte.jpg',
+      'category': 'Non Coffee',
     },
     {
       'name': 'Taro Oat',
       'description': 'with taro root, milk, and',
       'price': 'Rp15000',
       'image': 'assets/images/taro_latte.jpg',
+      'category': 'Non Coffee',
     },
     {
-      'name': 'Taro Latte',
-      'description': 'a latte recipe that is made with taro root, milk, and',
-      'price': 'Rp15000',
-      'image': 'assets/images/taro_latte.jpg',
+      'name': 'Espresso',
+      'description': 'Strong coffee brewed by forcing hot water under pressure',
+      'price': 'Rp12000',
+      'image': 'assets/images/coffee.png',
+      'category': 'Coffee',
     },
     {
-      'name': 'Matcha Latte',
-      'description': 'green tea latte recipe with',
-      'price': 'Rp15000',
-      'image': 'assets/images/matcha_latte.jpg',
+      'name': 'Cappuccino',
+      'description': 'Coffee with steamed milk foam',
+      'price': 'Rp18000',
+      'image': 'assets/images/coffee.png',
+      'category': 'Coffee',
     },
     {
-      'name': 'Choco Choco',
-      'description': 'with chocolate powder, milk',
-      'price': 'Rp15000',
-      'image': 'assets/images/choco_choco.jpg',
+      'name': 'Espresso',
+      'description': 'Strong coffee brewed by forcing hot water under pressure',
+      'price': 'Rp12000',
+      'image': 'assets/images/coffee.png',
+      'category': 'Coffee',
     },
     {
-      'name': 'Red Velvet',
-      'description': 'a latte recipe that is made with red velvet, milk',
+      'name': 'Cappuccino',
+      'description': 'Coffee with steamed milk foam',
+      'price': 'Rp18000',
+      'image': 'assets/images/coffee.png',
+      'category': 'Coffee',
+    },
+    {
+      'name': 'French Fries',
+      'description': 'Crispy potato fries with salt',
       'price': 'Rp15000',
-      'image': 'assets/images/red_velvet.jpg',
+      'image': 'assets/images/snacks.png',
+      'category': 'Snack',
+    },
+    {
+      'name': 'Mix Platter',
+      'description': 'Crispy potato fries and saussage',
+      'price': 'Rp15000',
+      'image': 'assets/images/snacks.png',
+      'category': 'Snack',
+    },
+    {
+      'name': 'French Fries',
+      'description': 'Crispy potato fries with salt',
+      'price': 'Rp15000',
+      'image': 'assets/images/snacks.png',
+      'category': 'Snack',
+    },
+    {
+      'name': 'Mix Platter',
+      'description': 'Crispy potato fries and saussage',
+      'price': 'Rp15000',
+      'image': 'assets/images/snacks.png',
+      'category': 'Snack',
+    },
+    {
+      'name': 'Nasi Ayam Bali',
+      'description': 'Nasi Ayam khas bali dengan sambal matah',
+      'price': 'Rp16000',
+      'image': 'assets/images/mainc.png',
+      'category': 'Main Course',
+    },
+    {
+      'name': 'Nasi Goreng',
+      'description': 'Nasi Goreng Jawa dengan bumbu spesial campaign',
+      'price': 'Rp14000',
+      'image': 'assets/images/mainc.png',
+      'category': 'Main Course',
+    },
+    {
+      'name': 'Nasi Ayam Bali',
+      'description': 'Nasi Ayam khas bali dengan sambal matah',
+      'price': 'Rp16000',
+      'image': 'assets/images/mainc.png',
+      'category': 'Main Course',
     },
   ];
 
@@ -204,9 +262,14 @@ class _MenuPageState extends State<MenuPage> {
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16.0),
-                itemCount: menuItems.length,
+                itemCount: menuItems
+                    .where((item) => item['category'] == selectedCategory)
+                    .length,
                 itemBuilder: (context, index) {
-                  final item = menuItems[index];
+                  final filteredItems = menuItems
+                      .where((item) => item['category'] == selectedCategory)
+                      .toList();
+                  final item = filteredItems[index];
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -215,10 +278,7 @@ class _MenuPageState extends State<MenuPage> {
                       borderRadius: BorderRadius.circular(12),
                       elevation: 3,
                       child: InkWell(
-                        onTap: () => 
-                        Get.toNamed
-                        (AppRoutes.detail)
-                        ,
+                        onTap: () => Get.toNamed(AppRoutes.detail),
                         borderRadius: BorderRadius.circular(12),
                         child: Padding(
                           padding: const EdgeInsets.all(16),

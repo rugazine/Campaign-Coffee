@@ -127,7 +127,7 @@ class HomePage extends GetView<HomeController> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => Get.to(() => const MenuPage()),
+                          onPressed: () => Get.to(() => MenuPage()),
                           child: const Text(
                             'See All',
                             style: TextStyle(

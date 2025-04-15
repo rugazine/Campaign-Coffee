@@ -1,4 +1,4 @@
-import 'package:campaign_coffee/pages/home/pages/detail_controller.dart';
+import 'package:campaign_coffee/pages/home/controllers/detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
