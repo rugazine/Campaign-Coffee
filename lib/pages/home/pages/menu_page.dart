@@ -2,6 +2,7 @@ import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:campaign_coffee/pages/home/pages/detail_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String? initialCategory;
@@ -278,7 +279,12 @@ class _MenuPageState extends State<MenuPage> {
                       borderRadius: BorderRadius.circular(12),
                       elevation: 3,
                       child: InkWell(
-                        onTap: () => Get.toNamed(AppRoutes.detail),
+                        onTap: () => Get.to(() => DetailPage(productData: {
+                              'name': item['name'],
+                              'price': int.parse(item['price'].substring(
+                                  2)), // Mengubah 'Rp15000' menjadi 15000
+                              'image': item['image'],
+                            })),
                         borderRadius: BorderRadius.circular(12),
                         child: Padding(
                           padding: const EdgeInsets.all(16),

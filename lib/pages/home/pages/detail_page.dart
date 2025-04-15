@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class DetailPage extends GetView<DetailController> {
-  DetailPage({super.key}) {
-    Get.put(DetailController());
+  DetailPage({super.key, Map<String, dynamic>? productData}) {
+    final controller = Get.put(DetailController());
+
+    // Jika productData diberikan, atur data produk di controller
+    if (productData != null) {
+      controller.setProductData(
+          productData['name'] ?? 'Choco Choco',
+          productData['price'] ?? 15000,
+          productData['image'] ?? 'assets/images/choco_choco.jpg');
+    }
   }
 
   @override
@@ -55,10 +63,10 @@ class DetailPage extends GetView<DetailController> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          'assets/images/choco_choco.jpg',
-                          fit: BoxFit.cover,
-                        ),
+                        child: Obx(() => Image.asset(
+                              controller.productImage,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                     ),
                   ),
@@ -70,13 +78,13 @@ class DetailPage extends GetView<DetailController> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 15),
-                        child: const Text(
-                          'Choco Choco',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: Obx(() => Text(
+                              controller.productName,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
                       ),
                     ],
                   ),
@@ -229,7 +237,7 @@ class DetailPage extends GetView<DetailController> {
                     color: Colors.grey.withOpacity(0.1),
                     spreadRadius: 1,
                     blurRadius: 10,
-                    offset: const Offset(0, -5),
+                    offset: Offset(0, -5),
                   ),
                 ],
               ),
@@ -239,7 +247,7 @@ class DetailPage extends GetView<DetailController> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Text(
                         'Price',
                         style: TextStyle(
@@ -248,7 +256,7 @@ class DetailPage extends GetView<DetailController> {
                         ),
                       ),
                       Text(
-                        'Rp.15000',
+                        'Rp.${controller.price}',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

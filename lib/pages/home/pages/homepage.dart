@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:campaign_coffee/pages/home/pages/menu_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:campaign_coffee/pages/home/pages/detail_page.dart';
 
 // You can define the color as a constant at the top of the file
 const mainBlue = Color.fromARGB(255, 8, 76, 172);
@@ -324,7 +325,12 @@ class HomePage extends GetView<HomeController> {
   }) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(AppRoutes.detail);
+        Get.to(() => DetailPage(productData: {
+              'name': name,
+              'price': int.parse(price.replaceAll(
+                  RegExp(r'[^0-9]'), '')), // Menghapus semua karakter non-angka
+              'image': image,
+            }));
       },
       child: Container(
         decoration: BoxDecoration(

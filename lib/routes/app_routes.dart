@@ -37,31 +37,31 @@ class AppRoutes {
     ),
     GetPage(
       name: home,
-      page: () =>  HomePage(),
+      page: () => HomePage(),
     ),
     GetPage(
       name: detail,
-      page: () =>  DetailPage(),
+      page: () => DetailPage(),
     ),
     GetPage(
       name: bottomnav,
-      page: () =>  BottomNav(),
+      page: () => BottomNav(),
     ),
     GetPage(
       name: menu,
-      page: () =>  MenuPage(),
+      page: () => MenuPage(),
     ),
     GetPage(
       name: history,
-      page: () =>  HistoryPage(),
+      page: () => HistoryPage(),
     ),
     GetPage(
       name: profile,
-      page: () =>  ProfilePage(),
+      page: () => ProfilePage(),
     ),
     GetPage(
       name: order,
-      page: () =>  OrderPage(),
+      page: () => OrderPage(),
     ),
   ];
 }
