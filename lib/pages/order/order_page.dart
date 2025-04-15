@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/pages/cart/controllers/cart_controller.dart';
+import 'package:campaign_coffee/pages/order/controllers/order_controller.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -13,14 +14,8 @@ class _OrderPageState extends State<OrderPage> {
   // Define main blue color constant for consistency
   static const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
-  // Delivery method options
-  final RxBool _isDelivery = true.obs;
-
-  // Get cart controller to access cart items
-  final CartController cartController = Get.find<CartController>();
-
-  // Calculate total price from cart items
-  double get _totalPrice => cartController.total;
+  // Initialize order controller
+  final OrderController orderController = Get.put(OrderController());
 
   void _updateQuantity(RxInt quantity, bool isIncrement) {
     if (isIncrement) {
@@ -70,11 +65,12 @@ class _OrderPageState extends State<OrderPage> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => _isDelivery.value = true,
+                            onTap: () =>
+                                orderController.toggleDeliveryMethod(true),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: _isDelivery.value
+                                color: orderController.isDelivery.value
                                     ? mainBlue
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(10),
@@ -85,7 +81,7 @@ class _OrderPageState extends State<OrderPage> {
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w500,
-                                    color: _isDelivery.value
+                                    color: orderController.isDelivery.value
                                         ? Colors.white
                                         : Colors.black54,
                                   ),
@@ -96,11 +92,12 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => _isDelivery.value = false,
+                            onTap: () =>
+                                orderController.toggleDeliveryMethod(false),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
-                                color: !_isDelivery.value
+                                color: !orderController.isDelivery.value
                                     ? mainBlue
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(10),
@@ -111,7 +108,7 @@ class _OrderPageState extends State<OrderPage> {
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w500,
-                                    color: !_isDelivery.value
+                                    color: !orderController.isDelivery.value
                                         ? Colors.white
                                         : Colors.black54,
                                   ),
@@ -131,7 +128,7 @@ class _OrderPageState extends State<OrderPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isDelivery.value
+                        orderController.isDelivery.value
                             ? 'Delivery Address'
                             : 'Pickup Address',
                         style: const TextStyle(
@@ -160,9 +157,9 @@ class _OrderPageState extends State<OrderPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _isDelivery.value
-                                  ? 'Jl. Kpg Sutoyo'
-                                  : 'Campaign Coffee Shop',
+                              orderController.isDelivery.value
+                                  ? orderController.deliveryAddress.value
+                                  : orderController.pickupAddress.value,
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 14,
@@ -170,19 +167,19 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                              _isDelivery.value
-                                  ? 'Kpg. Sutoyo No. 620, Bilzen, Tanjungbalai'
-                                  : 'Jl. Raya Serpong No. 8A, Serpong, Tangerang Selatan',
+                              orderController.isDelivery.value
+                                  ? orderController.deliveryAddressDetail.value
+                                  : orderController.pickupAddressDetail.value,
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
                                 color: Colors.grey,
                               ),
                             ),
-                            if (_isDelivery.value) ...[
+                            if (orderController.isDelivery.value) ...[
                               const SizedBox(height: 12),
                               OutlinedButton.icon(
-                                onPressed: () {},
+                                onPressed: () => orderController.processOrder(),
                                 icon: const Icon(Icons.edit_location_outlined,
                                     size: 16),
                                 label: const Text('Edit Address'),
@@ -220,7 +217,7 @@ class _OrderPageState extends State<OrderPage> {
               ),
               const SizedBox(height: 20),
               // Cart Items
-              Obx(() => cartController.cartItems.isEmpty
+              Obx(() => orderController.cartController.cartItems.isEmpty
                   ? Center(
                       child: Column(
                         children: [
@@ -246,9 +243,11 @@ class _OrderPageState extends State<OrderPage> {
                   : ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: cartController.cartItems.length,
+                      itemCount:
+                          orderController.cartController.cartItems.length,
                       itemBuilder: (context, index) {
-                        final item = cartController.cartItems[index];
+                        final item =
+                            orderController.cartController.cartItems[index];
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           padding: const EdgeInsets.all(16),
@@ -332,7 +331,7 @@ class _OrderPageState extends State<OrderPage> {
 
               // Add Note Button
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => orderController.processOrder(),
                 icon: const Icon(Icons.notes_outlined, size: 16),
                 label: const Text('Add Note'),
                 style: OutlinedButton.styleFrom(
@@ -377,7 +376,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   ),
                   Obx(() => Text(
-                        'Rp ${_totalPrice.toStringAsFixed(0)}',
+                        'Rp ${orderController.totalPrice.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,
@@ -404,17 +403,17 @@ class _OrderPageState extends State<OrderPage> {
                       children: [
                         const Icon(Icons.payment, color: mainBlue, size: 20),
                         const SizedBox(width: 8),
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Midtrans',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            Obx(() => Text(
+                                  orderController.paymentMethod.value,
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )),
                           ],
                         ),
                       ],
@@ -441,7 +440,7 @@ class _OrderPageState extends State<OrderPage> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () => orderController.processOrder(),
           style: ElevatedButton.styleFrom(
             backgroundColor: mainBlue,
             foregroundColor: Colors.white,
