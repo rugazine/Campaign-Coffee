@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:campaign_coffee/pages/cart/controllers/cart_controller.dart';
 import 'package:campaign_coffee/pages/order/controllers/order_controller.dart';
 
 class OrderPage extends StatefulWidget {

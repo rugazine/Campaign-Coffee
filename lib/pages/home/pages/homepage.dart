@@ -1,7 +1,6 @@
 import 'package:campaign_coffee/pages/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:campaign_coffee/pages/home/pages/menu_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:campaign_coffee/pages/home/pages/detail_page.dart';
