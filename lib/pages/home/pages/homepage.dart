@@ -70,7 +70,7 @@ class HomePage extends GetView<HomeController> {
                                       color: Colors.white,
                                       fontSize: 17,
                                       fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w100,
+                                      fontWeight: FontWeight.w800,
                                     ),
                                   )),
                             ],
@@ -307,8 +307,9 @@ class HomePage extends GetView<HomeController> {
           Text(
             label,
             style: const TextStyle(
-              fontSize: 12,
-              fontFamily: fontPoppins,
+              fontSize: 11,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

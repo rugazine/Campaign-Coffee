@@ -2,7 +2,6 @@ import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
 
@@ -30,9 +29,9 @@ class AuthPage extends StatelessWidget {
                   'Fall in Love with\nCoffee in\nCampaign Cofee',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 28,
                     fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w800,
                     height: 1.5,
                   ),
                 ),

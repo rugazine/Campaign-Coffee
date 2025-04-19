@@ -22,7 +22,7 @@ class RegisterPage extends StatelessWidget {
                   'Create Account',
                   style: TextStyle(
                     fontSize: 25,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'PoppinsSemiBold',
                     fontWeight: FontWeight.w700,
                     color: Color.fromRGBO(8, 76, 172, 1),
                   ),

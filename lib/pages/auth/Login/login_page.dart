@@ -31,9 +31,8 @@ class LoginPage extends GetView<LoginController> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
                     color: mainBlue,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'PoppinsSemiBold',
                   ),
                 ),
                 const SizedBox(height: 20),
