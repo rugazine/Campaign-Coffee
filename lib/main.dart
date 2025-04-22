@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routes/app_routes.dart';
-import 'package:campaign_coffee/pages/cart/controllers/cart_controller.dart';
+import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,14 +1,15 @@
-import 'package:campaign_coffee/pages/bottomnav/bottom_nav.dart';
+import 'package:campaign_coffee/app/pages/bottomnav/bottom_nav.dart';
+import 'package:campaign_coffee/app/pages/splash/splash.dart';
 import 'package:get/get.dart';
-import '../pages/auth/auth_page.dart';
-import '../pages/auth/Login/login_page.dart';
-import '../pages/auth/Register/register_page.dart';
-import '../pages/home/pages/homepage.dart';
-import '../pages/home/pages/detail_page.dart';
-import '../pages/home/pages/menu_page.dart';
-import '../pages/history/history_page.dart';
-import '../pages/profile/profile_page.dart';
-import '../pages/order/order_page.dart';
+import '../app/pages/auth/auth/auth_page.dart';
+import '../app/pages/auth/Login/login_page.dart';
+import '../app/pages/auth/Register/register_page.dart';
+import '../app/pages/home/pages/homepage.dart';
+import '../app/pages/home/pages/detail_page.dart';
+import '../app/pages/home/pages/menu_page.dart';
+import '../app/pages/history/history_page.dart';
+import '../app/pages/profile/profile_page.dart';
+import '../app/pages/order/order_page.dart';
 
 class AppRoutes {
   static const String auth = '/auth';
@@ -21,6 +22,8 @@ class AppRoutes {
   static const String history = '/history';
   static const String profile = '/profile';
   static const String order = '/order';
+    static const String splash = '/splash';
+
 
   static final routes = [
     GetPage(
@@ -62,6 +65,10 @@ class AppRoutes {
     GetPage(
       name: order,
       page: () => OrderPage(),
+    ),
+    GetPage(
+      name: splash,
+      page: () => SplashView(),
     ),
   ];
 }

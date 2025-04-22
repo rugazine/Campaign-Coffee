@@ -1,4 +1,4 @@
-import 'package:campaign_coffee/pages/profile/settings_page.dart';
+import 'package:campaign_coffee/app/pages/profile/settings_page.dart';
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {

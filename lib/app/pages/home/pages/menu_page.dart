@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:campaign_coffee/pages/home/pages/detail_page.dart';
+import 'package:campaign_coffee/app/pages/home/pages/detail_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String? initialCategory;

@@ -1,9 +1,9 @@
-import 'package:campaign_coffee/pages/auth/Login/login_controller.dart';
-import 'package:campaign_coffee/pages/cart/controllers/cart_controller.dart';
-import 'package:campaign_coffee/pages/home/controllers/detail_controller.dart';
-import 'package:campaign_coffee/pages/home/controllers/home_controller.dart';
-import 'package:campaign_coffee/pages/order/controllers/order_controller.dart';
-import 'package:campaign_coffee/pages/profile/controllers/profile_controller.dart';
+import 'package:campaign_coffee/app/pages/auth/Login/controller/login_controller.dart';
+import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
+import 'package:campaign_coffee/app/pages/home/controllers/detail_controller.dart';
+import 'package:campaign_coffee/app/pages/home/controllers/home_controller.dart';
+import 'package:campaign_coffee/app/pages/order/controllers/order_controller.dart';
+import 'package:campaign_coffee/app/pages/profile/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class AppBinding extends Bindings {

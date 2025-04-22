@@ -1,7 +1,7 @@
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'login_controller.dart';
+import 'controller/login_controller.dart';
 
 const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
@@ -47,58 +47,59 @@ class LoginPage extends GetView<LoginController> {
                 ),
                 const SizedBox(height: 70),
 
-                // Username TextField
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 12,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: TextFormField(
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontFamily: 'Poppins'),
-                    onChanged: controller.setUsername,
-                    validator: controller.validateUsername,
-                    decoration: InputDecoration(
-                      hintText: 'Username',
-                      hintStyle: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.grey[400],
-                        fontSize: 15,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.person_outline,
-                        color: mainBlue,
-                        size: 22,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: mainBlue,
-                          width: 1.5,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                // Email TextField
+Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(12),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.05),
+        blurRadius: 12,
+        offset: const Offset(0, 2),
+      ),
+    ],
+  ),
+  child: TextFormField(
+    textAlign: TextAlign.center,
+    style: const TextStyle(fontFamily: 'Poppins'),
+    onChanged: controller.setEmail,
+    validator: controller.validateEmail,
+    keyboardType: TextInputType.emailAddress,
+    decoration: InputDecoration(
+      hintText: 'Email',
+      hintStyle: TextStyle(
+        fontFamily: 'Poppins',
+        color: Colors.grey[400],
+        fontSize: 15,
+      ),
+      prefixIcon: const Icon(
+        Icons.email_outlined,
+        color: mainBlue,
+        size: 22,
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: mainBlue,
+          width: 1.5,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16, vertical: 16),
+    ),
+  ),
+),
+                const SizedBox(height: 14),
 
                 // Password TextField
                 Obx(() => Container(
@@ -288,7 +289,7 @@ class LoginPage extends GetView<LoginController> {
         iconPath,
         height: 24,
         width: 24,
-      ),
-    );
-  }
+     ),
+);
+}
 }
