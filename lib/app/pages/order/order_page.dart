@@ -10,10 +10,8 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
-  // Define main blue color constant for consistency
   static const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
-  // Initialize order controller
   final OrderController orderController = Get.put(OrderController());
 
   void _updateQuantity(RxInt quantity, bool isIncrement) {
@@ -54,7 +52,7 @@ class _OrderPageState extends State<OrderPage> {
               SizedBox(
                 height: 35,
               ),
-              // Delivery Method Selection
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
@@ -122,7 +120,6 @@ class _OrderPageState extends State<OrderPage> {
 
               const SizedBox(height: 24),
 
-              // Delivery or Pickup Address
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -204,7 +201,6 @@ class _OrderPageState extends State<OrderPage> {
                     ],
                   )),
 
-              // Order Items
               const SizedBox(height: 30),
               const Text(
                 'Your Order',
@@ -215,7 +211,6 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Cart Items
               Obx(() => orderController.cartController.cartItems.isEmpty
                   ? Center(
                       child: Column(
@@ -328,7 +323,6 @@ class _OrderPageState extends State<OrderPage> {
 
               const SizedBox(height: 16),
 
-              // Add Note Button
               OutlinedButton.icon(
                 onPressed: () => orderController.processOrder(),
                 icon: const Icon(Icons.notes_outlined, size: 16),
@@ -350,11 +344,9 @@ class _OrderPageState extends State<OrderPage> {
 
               const SizedBox(height: 16),
 
-              // Discount Section
 
               const SizedBox(height: 24),
 
-              // Payment Summary
               const Text(
                 'Payment Summary',
                 style: TextStyle(
@@ -387,7 +379,6 @@ class _OrderPageState extends State<OrderPage> {
 
               const SizedBox(height: 24),
 
-              // Payment Method
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -471,7 +462,6 @@ class _OrderPageState extends State<OrderPage> {
       ),
       child: Row(
         children: [
-          // Product Image
           Container(
             width: 54,
             height: 54,
@@ -485,7 +475,6 @@ class _OrderPageState extends State<OrderPage> {
           ),
           const SizedBox(width: 12),
 
-          // Product Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,10 +500,8 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ),
 
-          // Quantity Controls
           Row(
             children: [
-              // Decrease Button
               GestureDetector(
                 onTap: () => _updateQuantity(quantity, false),
                 child: Container(
@@ -529,7 +516,6 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
 
-              // Quantity Display
               Obx(() => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
@@ -542,7 +528,6 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   )),
 
-              // Increase Button
               GestureDetector(
                 onTap: () => _updateQuantity(quantity, true),
                 child: Container(

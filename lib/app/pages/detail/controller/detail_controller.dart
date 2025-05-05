@@ -40,7 +40,7 @@ class DetailController extends GetxController {
     final CartController cartController = Get.find<CartController>();
 
     Map<String, dynamic> product = {
-      'id': 9, // Later you can pass real id if needed
+      'id': 9, 
       'name': productName,
       'price': price,
       'quantity': 1,

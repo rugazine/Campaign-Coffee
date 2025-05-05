@@ -54,7 +54,6 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
 
         if (response.statusCode == 200) {
-          // Login sukses, arahkan ke halaman utama
           Get.offAllNamed(AppRoutes.bottomnav);
         } else {
           Get.snackbar(

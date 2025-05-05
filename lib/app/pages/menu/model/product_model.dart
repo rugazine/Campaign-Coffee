@@ -27,12 +27,12 @@ class ProductModel {
     return ProductModel(
       id: json['id'],
       name: json['name'],
-      category: json['category'],
+      category: json['category']['name'], // mengambil nama kategori
       description: json['description'],
       image: json['image'],
       price: double.parse(json['price']),
-      rating: json['rating'].toDouble(),
-      reviewCount: json['review_count'],
+      rating: (json['rating'] ?? 0).toDouble(),
+      reviewCount: json['review_count'] ?? 0,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
@@ -51,24 +51,5 @@ class ProductModel {
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
-  }
-}
-
-class ProductResponse {
-  final int currentPage;
-  final List<ProductModel> data;
-
-  ProductResponse({
-    required this.currentPage,
-    required this.data,
-  });
-
-  factory ProductResponse.fromJson(Map<String, dynamic> json) {
-    return ProductResponse(
-      currentPage: json['current_page'],
-      data: (json['data'] as List)
-          .map((item) => ProductModel.fromJson(item))
-          .toList(),
-    );
   }
 }

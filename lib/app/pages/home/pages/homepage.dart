@@ -5,7 +5,6 @@ import 'package:campaign_coffee/app/pages/menu/pages/menu_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:campaign_coffee/app/pages/detail/pages/detail_page.dart';
 
-// You can define the color as a constant at the top of the file
 const mainBlue = Color.fromARGB(255, 8, 76, 172);
 const fontPoppins = 'Poppins';
 
@@ -23,7 +22,6 @@ class HomePage extends GetView<HomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Blue Container for Welcome Section and Promo
               Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
@@ -36,7 +34,6 @@ class HomePage extends GetView<HomeController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Welcome Section
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Row(
@@ -79,7 +76,6 @@ class HomePage extends GetView<HomeController> {
                       ),
                     ),
 
-                    // Scrollable Promo Section
                     SizedBox(
                       height: 160,
                       child: SingleChildScrollView(
@@ -113,7 +109,6 @@ class HomePage extends GetView<HomeController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Category Section
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,7 +132,6 @@ class HomePage extends GetView<HomeController> {
                       ],
                     ),
 
-                    // Category Icons
                     const SizedBox(height: 15),
                     Obx(() => Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -148,7 +142,6 @@ class HomePage extends GetView<HomeController> {
                               .toList(),
                         )),
 
-                    // Recommendation Section
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,7 +165,6 @@ class HomePage extends GetView<HomeController> {
                       ],
                     ),
 
-                    // Recommendation Grid
                     const SizedBox(height: 15),
                     Obx(() => GridView.count(
                           physics: const NeverScrollableScrollPhysics(),
@@ -328,7 +320,7 @@ class HomePage extends GetView<HomeController> {
         Get.to(() => DetailPage(productData: {
               'name': name,
               'price': int.parse(price.replaceAll(
-                  RegExp(r'[^0-9]'), '')), // Menghapus semua karakter non-angka
+                  RegExp(r'[^0-9]'), '')), 
               'image': image,
             }));
       },

@@ -46,62 +46,58 @@ class LoginPage extends GetView<LoginController> {
                       fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 70),
-
-                // Email TextField
-Container(
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.05),
-        blurRadius: 12,
-        offset: const Offset(0, 2),
-      ),
-    ],
-  ),
-  child: TextFormField(
-    textAlign: TextAlign.center,
-    style: const TextStyle(fontFamily: 'Poppins'),
-    onChanged: controller.setEmail,
-    validator: controller.validateEmail,
-    keyboardType: TextInputType.emailAddress,
-    decoration: InputDecoration(
-      hintText: 'Email',
-      hintStyle: TextStyle(
-        fontFamily: 'Poppins',
-        color: Colors.grey[400],
-        fontSize: 15,
-      ),
-      prefixIcon: const Icon(
-        Icons.email_outlined,
-        color: mainBlue,
-        size: 22,
-      ),
-      filled: true,
-      fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: mainBlue,
-          width: 1.5,
-        ),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16, vertical: 16),
-    ),
-  ),
-),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'Poppins'),
+                    onChanged: controller.setEmail,
+                    validator: controller.validateEmail,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.grey[400],
+                        fontSize: 15,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: mainBlue,
+                        size: 22,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: mainBlue,
+                          width: 1.5,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 14),
-
-                // Password TextField
                 Obx(() => Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
@@ -163,14 +159,10 @@ Container(
                       ),
                     )),
                 SizedBox(height: 14),
-
-                // Forgot Password
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {
-                      // Add forgot password logic here
-                    },
+                    onPressed: () {},
                     child: const Text(
                       'Forgot your password?',
                       style: TextStyle(
@@ -181,10 +173,7 @@ Container(
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-                // Sign in Button
                 Obx(() => SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -217,10 +206,7 @@ Container(
                               ),
                       ),
                     )),
-
                 const SizedBox(height: 40),
-
-                // Create new account
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -237,10 +223,7 @@ Container(
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 90),
-
-                // Or continue with
                 const Center(
                   child: Text(
                     'Or continue with',
@@ -253,8 +236,6 @@ Container(
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Social Login Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -289,7 +270,7 @@ Container(
         iconPath,
         height: 24,
         width: 24,
-     ),
-);
-}
+      ),
+    );
+  }
 }

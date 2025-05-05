@@ -64,16 +64,16 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchFeaturedProducts() async {
-    try {
-      isLoading.value = true;
-      error.value = '';
-      final response = await _productService.getProducts();
-      // Mengambil 5 produk pertama untuk ditampilkan di halaman utama
-      featuredProducts.value = response.data.take(5).toList();
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
+  try {
+    isLoading.value = true;
+    error.value = '';
+    final response = await _productService.getProducts();
+    featuredProducts.value = response.take(5).toList(); 
+  } catch (e) {
+    error.value = e.toString();
+  } finally {
+    isLoading.value = false;
   }
+}
+
 }

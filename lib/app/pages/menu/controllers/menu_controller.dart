@@ -20,12 +20,10 @@ class MenuController extends GetxController {
       isLoading.value = true;
       error.value = '';
       final response = await _productService.getProducts();
-      print(
-          'Data received: ${response.data}'); // Tambahkan log ini untuk debugging
-      products.value = response.data;
+      products.value = response;
     } catch (e) {
       error.value = e.toString();
-      print('Error: $e'); // Tambahkan log error
+      print('Error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -37,8 +35,8 @@ class MenuController extends GetxController {
       final selected = selectedCategory.value.toLowerCase();
 
       return productCategory == selected ||
-          (selected == 'coffee' && productCategory == 'coffe') ||
-          (selected == 'non coffee' && productCategory == 'non coffe') ||
+          (selected == 'coffee' && productCategory == 'coffee') ||
+          (selected == 'non coffee' && productCategory == 'non coffee') ||
           (selected == 'main course' && productCategory == 'main course') ||
           (selected == 'snack' && productCategory == 'snack');
     }).toList();

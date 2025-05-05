@@ -18,36 +18,26 @@ class ProfileController extends GetxController {
     if (newProfileImage != null) profileImage.value = newProfileImage;
   }
 
-  // Method to toggle notifications
   void toggleNotifications() {
     notificationsEnabled.value = !notificationsEnabled.value;
   }
 
-  // Method to handle logout
   void logout() {
-    // TODO: Implement actual logout logic
-    Get.offAllNamed('/auth'); // Navigate to auth page after logout
+    Get.offAllNamed('/auth'); 
   }
 
-  // Method to handle payment methods
   void managePaymentMethods() {
-    // TODO: Implement payment methods management
     Get.toNamed('/payment-methods');
   }
 
-  // Method to handle addresses
   void manageAddresses() {
-    // TODO: Implement addresses management
     Get.toNamed('/addresses');
   }
 
-  // Method to handle help center
   void openHelpCenter() {
-    // TODO: Implement help center
     Get.toNamed('/help-center');
   }
 
-  // Method to handle settings
   void openSettings() {
   Get.put(ProfileController());
   Get.to(() => const SettingsPage());

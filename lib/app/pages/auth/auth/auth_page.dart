@@ -12,7 +12,7 @@ class AuthPage extends StatelessWidget {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
-                "assets/images/auth.png"), // Ganti dengan path gambar yang sesuai
+                "assets/images/auth.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -24,7 +24,6 @@ class AuthPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 450),
 
-                // Title
                 const Text(
                   'Fall in Love with\nCoffee in\nCampaign Cofee',
                   textAlign: TextAlign.center,
@@ -37,7 +36,6 @@ class AuthPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Subtitle
                 const Text(
                   'Welcome to our cozy coffee corner, where\nevery cup is a delightful for you.',
                   textAlign: TextAlign.center,
@@ -50,10 +48,8 @@ class AuthPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Buttons Row
                 Row(
                   children: [
-                    // Login Button
                     Expanded(
                       child: SizedBox(
                         height: 55,
@@ -85,7 +81,6 @@ class AuthPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 15),
 
-                    // Register Button
                     Expanded(
                       child: SizedBox(
                         height: 55,

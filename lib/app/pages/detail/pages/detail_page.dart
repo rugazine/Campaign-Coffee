@@ -69,7 +69,6 @@ class DetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Product Title
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
                     child: Obx(() => Text(
@@ -99,7 +98,6 @@ class DetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Description
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
                     child: Column(
@@ -116,11 +114,9 @@ class DetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 30),
 
-                  // Sugar Level
                   _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'], controller.selectedSugar, controller.setSugar),
                   const SizedBox(height: 30),
 
-                  // Temperature
                   _buildOptionSection('Temperature', ['Ice', 'Hot'], controller.selectedTemperature, controller.setTemperature),
                   const SizedBox(height: 30),
 
@@ -130,7 +126,6 @@ class DetailPage extends StatelessWidget {
             ),
           ),
 
-          // Bottom Cart Bar
           Positioned(
             left: 0,
             right: 0,

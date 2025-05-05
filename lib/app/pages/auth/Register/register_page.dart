@@ -45,7 +45,6 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 50),
 
-                // Form Fields
                 _buildTextField(
                   hintText: 'Username',
                   prefixIcon: Icons.person_outline,
@@ -78,7 +77,6 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 60),
 
-                // Next Button
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -108,7 +106,6 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Already have an account
                 Center(
                   child: GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.login),

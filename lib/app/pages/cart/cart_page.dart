@@ -10,7 +10,6 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  // Inisialisasi CartController
 
   final CartController cartController = Get.put(CartController());
 
@@ -26,7 +25,6 @@ class _CartPageState extends State<CartPage> {
     return cartController.total;
   }
 
-  // Define main blue color constant for consistency
   static const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
   @override
@@ -109,7 +107,7 @@ class _CartPageState extends State<CartPage> {
                                           cartController.cartItems[index];
                                       return GestureDetector(
                                           onTap: () {
-                                            // Navigasi ke halaman detail dengan data produk yang sesuai
+
                                             Get.toNamed('/detail', arguments: {
                                               'productData': {
                                                 'name': item['name'],
