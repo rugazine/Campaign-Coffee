@@ -40,7 +40,7 @@ class LoginController extends GetxController {
         isLoading.value = true;
 
         final response = await http.post(
-          Uri.parse('https://37b8-103-164-229-141.ngrok-free.app/api/login'),
+          Uri.parse('https://campaign.rplrus.com/api/login'),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',

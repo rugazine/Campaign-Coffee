@@ -1,9 +1,9 @@
 import 'package:campaign_coffee/app/pages/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:campaign_coffee/app/pages/home/pages/menu_page.dart';
+import 'package:campaign_coffee/app/pages/menu/pages/menu_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:campaign_coffee/app/pages/home/pages/detail_page.dart';
+import 'package:campaign_coffee/app/pages/detail/pages/detail_page.dart';
 
 // You can define the color as a constant at the top of the file
 const mainBlue = Color.fromARGB(255, 8, 76, 172);

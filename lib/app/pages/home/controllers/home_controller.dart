@@ -1,70 +1,79 @@
 import 'package:get/get.dart';
+import '../../menu/model/product_model.dart';
+import '../../menu/services/product_service.dart';
 
 class HomeController extends GetxController {
-  // State untuk nama user
-  final userName = 'Ruga Zinedine'.obs;
+  final ProductService _productService = ProductService();
+  final RxList<ProductModel> featuredProducts = <ProductModel>[].obs;
+  final RxBool isLoading = true.obs;
+  final RxString error = ''.obs;
+  final RxString userName = 'John Doe'.obs;
 
-  // State untuk promo cards
-  final promoCards = [
+  final RxList<String> categories =
+      <String>['Coffee', 'Non Coffee', 'Snack', 'Main Course'].obs;
+
+  final RxList<Map<String, dynamic>> promoCards = <Map<String, dynamic>>[
     {
       'title': 'Buy one get\none FREE',
-      'image': 'assets/images/banner.png',
+      'tag': 'Promo',
+      'image': 'assets/images/banner.png'
     },
     {
-      'title': 'Buy one get\none FREE',
-      'image': 'assets/images/banner.png',
+      'title': 'Special 50% OFF',
+      'tag': 'Promo',
+      'image': 'assets/images/banner.png'
     },
     {
-      'title': 'Buy one get\none FREE',
-      'image': 'assets/images/banner.png',
-    },
+      'title': 'New Menu\nDiscount 25%',
+      'tag': 'Promo',
+      'image': 'assets/images/banner.png'
+    }
   ].obs;
 
-  // State untuk kategori
-  final categories = [
-    'Coffee',
-    'Non Coffee',
-    'Snack',
-    'Main Course',
-  ].obs;
-
-  // State untuk rekomendasi produk
-  final recommendedProducts = [
+  final RxList<Map<String, String>> recommendedProducts = <Map<String, String>>[
     {
       'image': 'assets/images/choco_choco.jpg',
-      'name': 'Choco - Choco',
-      'category': 'Chocolate',
-      'price': 'Rp. 15000',
+      'name': 'Choco Choco',
+      'category': 'Non Coffee',
+      'price': 'Rp 15.000'
     },
     {
       'image': 'assets/images/matcha_latte.jpg',
       'name': 'Matcha Latte',
-      'category': 'Matcha',
-      'price': 'Rp. 15000',
-    },
-    {
-      'image': 'assets/images/taro_latte.jpg',
-      'name': 'Taro Latte',
-      'category': 'Taro',
-      'price': 'Rp. 15000',
+      'category': 'Non Coffee',
+      'price': 'Rp 18.000'
     },
     {
       'image': 'assets/images/red_velvet.jpg',
       'name': 'Red Velvet',
-      'category': 'Red Velvet',
-      'price': 'Rp. 15000',
+      'category': 'Non Coffee',
+      'price': 'Rp 20.000'
     },
     {
-      'image': 'assets/images/choco_choco.jpg',
-      'name': 'Choco - Choco',
-      'category': 'Chocolate',
-      'price': 'Rp. 15000',
-    },
-    {
-      'image': 'assets/images/matcha_latte.jpg',
-      'name': 'Matcha Latte',
-      'category': 'Matcha',
-      'price': 'Rp. 15000',
-    },
+      'image': 'assets/images/taro_latte.jpg',
+      'name': 'Taro Latte',
+      'category': 'Non Coffee',
+      'price': 'Rp 18.000'
+    }
   ].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchFeaturedProducts();
+  }
+
+  Future<void> fetchFeaturedProducts() async {
+    try {
+      isLoading.value = true;
+      error.value = '';
+      final response = await _productService.getProducts();
+      // Mengambil 5 produk pertama untuk ditampilkan di halaman utama
+      featuredProducts.value = response.data.take(5).toList();
+    } catch (e) {
+      error.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

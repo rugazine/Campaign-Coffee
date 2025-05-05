@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 
 class DetailController extends GetxController {
-  // Observable state variables
   final _selectedSugar = 'Normal'.obs;
   final _selectedTemperature = 'Ice'.obs;
   final _isFavorite = false.obs;
@@ -10,7 +9,6 @@ class DetailController extends GetxController {
   final _productName = 'Choco Choco'.obs;
   final _productImage = 'assets/images/choco_choco.jpg'.obs;
 
-  // Getters
   String get selectedSugar => _selectedSugar.value;
   String get selectedTemperature => _selectedTemperature.value;
   bool get isFavorite => _isFavorite.value;
@@ -18,7 +16,6 @@ class DetailController extends GetxController {
   String get productName => _productName.value;
   String get productImage => _productImage.value;
 
-  // Methods to update state
   void setSugar(String sugar) {
     _selectedSugar.value = sugar;
   }
@@ -31,19 +28,19 @@ class DetailController extends GetxController {
     _isFavorite.value = !_isFavorite.value;
   }
 
-  // Mengatur data produk
-  void setProductData(String name, int productPrice, String image) {
+  void setProductData(String name, dynamic productPrice, String image) {
     _productName.value = name;
-    _price.value = productPrice;
+    _price.value = (productPrice is double)
+        ? productPrice.toInt()
+        : (productPrice ?? 15000);
     _productImage.value = image;
   }
 
   void addToCart() {
-    // Dapatkan instance CartController
     final CartController cartController = Get.find<CartController>();
 
-    // Buat objek produk untuk ditambahkan ke keranjang
     Map<String, dynamic> product = {
+      'id': 9, // Later you can pass real id if needed
       'name': productName,
       'price': price,
       'quantity': 1,
@@ -52,7 +49,6 @@ class DetailController extends GetxController {
       'temperature': selectedTemperature,
     };
 
-    // Tambahkan ke keranjang
     cartController.addToCart(product);
   }
 }

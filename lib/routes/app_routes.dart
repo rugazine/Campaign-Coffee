@@ -1,12 +1,11 @@
 import 'package:campaign_coffee/app/pages/bottomnav/bottom_nav.dart';
-import 'package:campaign_coffee/app/pages/splash/splash.dart';
 import 'package:get/get.dart';
 import '../app/pages/auth/auth/auth_page.dart';
 import '../app/pages/auth/Login/login_page.dart';
 import '../app/pages/auth/Register/register_page.dart';
 import '../app/pages/home/pages/homepage.dart';
-import '../app/pages/home/pages/detail_page.dart';
-import '../app/pages/home/pages/menu_page.dart';
+import '../app/pages/detail/pages/detail_page.dart';
+import '../app/pages/menu/pages/menu_page.dart';
 import '../app/pages/history/history_page.dart';
 import '../app/pages/profile/profile_page.dart';
 import '../app/pages/order/order_page.dart';
@@ -66,9 +65,6 @@ class AppRoutes {
       name: order,
       page: () => OrderPage(),
     ),
-    GetPage(
-      name: splash,
-      page: () => SplashView(),
-    ),
+  
   ];
 }
