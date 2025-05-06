@@ -1,9 +1,12 @@
+import 'package:campaign_coffee/app/pages/auth/Register/controller/register_controller.dart';
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
+  RegisterPage({super.key});
+
+  final registerController = Get.put(RegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -45,15 +48,18 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 50),
 
+                // Form Fields
                 _buildTextField(
                   hintText: 'Username',
                   prefixIcon: Icons.person_outline,
+                  controller: registerController.usernameController,
                 ),
                 const SizedBox(height: 16),
 
                 _buildTextField(
                   hintText: 'Email',
                   prefixIcon: Icons.email_outlined,
+                  controller: registerController.emailController,
                 ),
                 const SizedBox(height: 16),
 
@@ -61,6 +67,7 @@ class RegisterPage extends StatelessWidget {
                   hintText: 'Password',
                   prefixIcon: Icons.lock_outline,
                   isPassword: true,
+                  controller: registerController.passwordController,
                 ),
                 const SizedBox(height: 16),
 
@@ -68,44 +75,56 @@ class RegisterPage extends StatelessWidget {
                   hintText: 'Confirm Password',
                   prefixIcon: Icons.lock_outline,
                   isPassword: true,
+                  controller: registerController.confirmPasswordController,
                 ),
                 const SizedBox(height: 16),
 
                 _buildTextField(
                   hintText: 'Phone Number',
                   prefixIcon: Icons.phone_outlined,
+                  controller: registerController.phoneController,
                 ),
                 const SizedBox(height: 60),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.offAllNamed(AppRoutes.bottomnav);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(8, 76, 172, 1),
-                      elevation: 20,
-                      shadowColor:
-                          Color.fromRGBO(8, 76, 172, 1).withOpacity(0.3),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                // Next Button
+                Obx(() {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: registerController.isLoading.value
+                          ? null
+                          : () {
+                              registerController.register();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(8, 76, 172, 1),
+                        elevation: 20,
+                        shadowColor:
+                            const Color.fromRGBO(8, 76, 172, 1).withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: registerController.isLoading.value
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              'Create Account',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
-                    child: const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: 24),
 
+                // Already have an account
                 Center(
                   child: GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.login),
@@ -122,7 +141,7 @@ class RegisterPage extends StatelessWidget {
                           TextSpan(
                             text: 'Login',
                             style: TextStyle(
-                              color: const Color.fromRGBO(8, 76, 172, 1),
+                              color: Color.fromRGBO(8, 76, 172, 1),
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Poppins',
                             ),
@@ -144,6 +163,7 @@ class RegisterPage extends StatelessWidget {
     required String hintText,
     required IconData prefixIcon,
     bool isPassword = false,
+    TextEditingController? controller,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -157,8 +177,9 @@ class RegisterPage extends StatelessWidget {
         ],
       ),
       child: TextField(
-        textAlign: TextAlign.center,
+        controller: controller,
         obscureText: isPassword,
+        textAlign: TextAlign.center,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
@@ -190,7 +211,7 @@ class RegisterPage extends StatelessWidget {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
-      ),
-    );
-  }
+     ),
+);
+}
 }

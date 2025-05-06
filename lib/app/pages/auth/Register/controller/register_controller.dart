@@ -58,6 +58,7 @@ class RegisterController extends GetxController {
 }
 
     } catch (e) {
+      // ❌ Error koneksi / parsing
       Get.snackbar(
         'Error',
         'Failed to connect to server',
@@ -66,6 +67,6 @@ class RegisterController extends GetxController {
       );
     } finally {
       isLoading.value = false;
-    }
-  }
+}
+}
 }
