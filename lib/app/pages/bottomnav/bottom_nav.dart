@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../home/pages/homepage.dart';
 import '../cart/cart_page.dart';
 import '../history/history_page.dart';
-import '../profile/profile_page.dart';
+import '../profile/pages/profile_page.dart';
 
 class BottomNav extends StatelessWidget {
   const BottomNav({super.key});

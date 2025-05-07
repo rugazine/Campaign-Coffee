@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:campaign_coffee/routes/app_routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class LoginController extends GetxController {
   final email = ''.obs;
@@ -54,6 +56,9 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
 
         if (response.statusCode == 200) {
+          final token = data['token'];
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
           Get.offAllNamed(AppRoutes.bottomnav);
         } else {
           Get.snackbar(

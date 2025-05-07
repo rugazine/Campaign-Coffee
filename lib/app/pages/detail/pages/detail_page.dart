@@ -29,13 +29,16 @@ class DetailPage extends StatelessWidget {
         ),
         title: const Text(
           'Detail',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         centerTitle: true,
         actions: [
           Obx(() => IconButton(
                 icon: Icon(
-                  controller.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  controller.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
                   color: controller.isFavorite ? Colors.red : Colors.black,
                 ),
                 onPressed: controller.toggleFavorite,
@@ -60,20 +63,48 @@ class DetailPage extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Obx(() => Image.asset(
+                        child: Obx(() => Image.network(
                               controller.productImage,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.error_outline,
+                                          color: Colors.red, size: 48),
+                                      SizedBox(height: 8),
+                                      Text('Gagal memuat gambar',
+                                          style: TextStyle(color: Colors.grey))
+                                    ],
+                                  ),
+                                );
+                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
                             )),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
                     child: Obx(() => Text(
                           controller.productName,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         )),
                   ),
                   const SizedBox(height: 8),
@@ -91,41 +122,48 @@ class DetailPage extends StatelessWidget {
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 20),
                         const SizedBox(width: 4),
-                        const Text('4.8', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text(' (230)', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                        const Text('4.8',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(' (230)',
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey[600])),
                       ],
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        const Text('Description',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
                         Text(
                           'A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk foam...',
-                          style: TextStyle(fontSize: 14, color: Colors.grey[400]),
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.grey[400]),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 30),
-
-                  _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'], controller.selectedSugar, controller.setSugar),
+                  _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'],
+                      controller.selectedSugar, controller.setSugar),
                   const SizedBox(height: 30),
-
-                  _buildOptionSection('Temperature', ['Ice', 'Hot'], controller.selectedTemperature, controller.setTemperature),
+                  _buildOptionSection(
+                      'Temperature',
+                      ['Ice', 'Hot'],
+                      controller.selectedTemperature,
+                      controller.setTemperature),
                   const SizedBox(height: 30),
-
                   const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
-
           Positioned(
             left: 0,
             right: 0,
@@ -150,10 +188,15 @@ class DetailPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('Price', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                          const Text('Price',
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey)),
                           Text(
                             'Rp.${controller.price}',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 8, 76, 172)),
+                            style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 8, 76, 172)),
                           ),
                         ],
                       )),
@@ -161,12 +204,17 @@ class DetailPage extends StatelessWidget {
                     onPressed: controller.addToCart,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 8, 76, 172),
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: const Text(
                       'Add To Cart',
-                      style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -178,13 +226,16 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionSection(String title, List<String> options, String selected, Function(String) onSelect) {
+  Widget _buildOptionSection(String title, List<String> options,
+      String selected, Function(String) onSelect) {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
           Row(
             children: options.map((label) {
@@ -194,12 +245,17 @@ class DetailPage extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => onSelect(label),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color.fromARGB(255, 8, 76, 172) : Colors.transparent,
+                      color: isSelected
+                          ? const Color.fromARGB(255, 8, 76, 172)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isSelected ? const Color.fromARGB(255, 8, 76, 172) : Colors.grey[300]!,
+                        color: isSelected
+                            ? const Color.fromARGB(255, 8, 76, 172)
+                            : Colors.grey[300]!,
                       ),
                     ),
                     child: Text(

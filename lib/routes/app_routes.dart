@@ -7,8 +7,9 @@ import '../app/pages/home/pages/homepage.dart';
 import '../app/pages/detail/pages/detail_page.dart';
 import '../app/pages/menu/pages/menu_page.dart';
 import '../app/pages/history/history_page.dart';
-import '../app/pages/profile/profile_page.dart';
+import '../app/pages/profile/pages/profile_page.dart';
 import '../app/pages/order/order_page.dart';
+import '../app/pages/splash/splash_screen.dart';
 
 class AppRoutes {
   static const String auth = '/auth';
@@ -21,10 +22,13 @@ class AppRoutes {
   static const String history = '/history';
   static const String profile = '/profile';
   static const String order = '/order';
-    static const String splash = '/splash';
-
+  static const String splash = '/splash';
 
   static final routes = [
+    GetPage(
+      name: splash,
+      page: () => const SplashScreen(),
+    ),
     GetPage(
       name: auth,
       page: () => AuthPage(),
@@ -65,6 +69,5 @@ class AppRoutes {
       name: order,
       page: () => OrderPage(),
     ),
-  
   ];
 }

@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
+import 'package:campaign_coffee/app/pages/menu/services/product_service.dart';
+import 'package:get/get.dart';
 
 class DetailController extends GetxController {
   final _selectedSugar = 'Normal'.obs;
@@ -28,19 +31,47 @@ class DetailController extends GetxController {
     _isFavorite.value = !_isFavorite.value;
   }
 
-  void setProductData(String name, dynamic productPrice, String image) {
-    _productName.value = name;
+  final _isLoading = false.obs;
+  bool get isLoading => _isLoading.value;
+
+  final ProductService _productService = ProductService();
+
+  void setProductData(String? name, dynamic productPrice, String? image) {
+    _productName.value = name ?? 'Choco Choco';
     _price.value = (productPrice is double)
         ? productPrice.toInt()
         : (productPrice ?? 15000);
-    _productImage.value = image;
+    _productImage.value = image ?? 'assets/images/choco_choco.jpg';
+  }
+
+  Future<void> fetchProductDetail(int productId) async {
+    try {
+      _isLoading.value = true;
+      final product = await _productService.getProductById(productId);
+
+      setProductData(
+        product.name,
+        product.price,
+        product.image,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memuat detail produk: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      _isLoading.value = false;
+    }
   }
 
   void addToCart() {
     final CartController cartController = Get.find<CartController>();
 
     Map<String, dynamic> product = {
-      'id': 9, 
+      'id': 9,
       'name': productName,
       'price': price,
       'quantity': 1,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controllers/profile_controller.dart';
+import '../controllers/profile_controller.dart';
 
 const mainBlue = Color.fromRGBO(8, 76, 172, 1);
 
