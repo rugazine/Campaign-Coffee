@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 
 class LoginController extends GetxController {
   final email = ''.obs;
@@ -59,6 +60,11 @@ class LoginController extends GetxController {
           final token = data['token'];
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
+
+          // Muat cart untuk user yang baru login
+          final cartController = Get.find<CartController>();
+          await cartController.loadCartFromPrefs();
+
           Get.offAllNamed(AppRoutes.bottomnav);
         } else {
           Get.snackbar(

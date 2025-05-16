@@ -10,7 +10,6 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-
   final CartController cartController = Get.put(CartController());
 
   void _updateQuantity(int index, bool increment) {
@@ -107,7 +106,6 @@ class _CartPageState extends State<CartPage> {
                                           cartController.cartItems[index];
                                       return GestureDetector(
                                           onTap: () {
-
                                             Get.toNamed('/detail', arguments: {
                                               'productData': {
                                                 'name': item['name'],
@@ -168,11 +166,43 @@ class _CartPageState extends State<CartPage> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               12),
-                                                      child: Image.asset(
+                                                      child: Image.network(
                                                         item['image'],
                                                         width: 85,
                                                         height: 85,
                                                         fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                            error, stackTrace) {
+                                                          return Container(
+                                                            width: 85,
+                                                            height: 85,
+                                                            color: Colors
+                                                                .grey[200],
+                                                            child: const Icon(
+                                                              Icons
+                                                                  .image_not_supported,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          );
+                                                        },
+                                                        loadingBuilder: (context,
+                                                            child,
+                                                            loadingProgress) {
+                                                          if (loadingProgress ==
+                                                              null)
+                                                            return child;
+                                                          return Container(
+                                                            width: 85,
+                                                            height: 85,
+                                                            color: Colors
+                                                                .grey[200],
+                                                            child: const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          );
+                                                        },
                                                       ),
                                                     ),
                                                   ),

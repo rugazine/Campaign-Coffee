@@ -52,7 +52,6 @@ class _OrderPageState extends State<OrderPage> {
               SizedBox(
                 height: 35,
               ),
-
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
@@ -117,9 +116,7 @@ class _OrderPageState extends State<OrderPage> {
                       ],
                     )),
               ),
-
               const SizedBox(height: 24),
-
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -200,7 +197,6 @@ class _OrderPageState extends State<OrderPage> {
                       const SizedBox(height: 24),
                     ],
                   )),
-
               const SizedBox(height: 30),
               const Text(
                 'Your Order',
@@ -261,11 +257,21 @@ class _OrderPageState extends State<OrderPage> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
+                                child: Image.network(
                                   item['image'],
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: Colors.grey[200],
+                                      child: const Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.grey),
+                                    );
+                                  },
                                 ),
                               ),
                               const SizedBox(width: 16),
@@ -320,9 +326,7 @@ class _OrderPageState extends State<OrderPage> {
                         );
                       },
                     )),
-
               const SizedBox(height: 16),
-
               OutlinedButton.icon(
                 onPressed: () => orderController.processOrder(),
                 icon: const Icon(Icons.notes_outlined, size: 16),
@@ -341,12 +345,8 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
-
-
               const SizedBox(height: 24),
-
               const Text(
                 'Payment Summary',
                 style: TextStyle(
@@ -376,9 +376,7 @@ class _OrderPageState extends State<OrderPage> {
                       )),
                 ],
               ),
-
               const SizedBox(height: 24),
-
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -468,13 +466,14 @@ class _OrderPageState extends State<OrderPage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: AssetImage(imagePath),
+                image: NetworkImage(imagePath),
                 fit: BoxFit.cover,
+                onError: (exception, stackTrace) =>
+                    const Icon(Icons.image_not_supported, color: Colors.grey),
               ),
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +498,6 @@ class _OrderPageState extends State<OrderPage> {
               ],
             ),
           ),
-
           Row(
             children: [
               GestureDetector(
@@ -515,7 +513,6 @@ class _OrderPageState extends State<OrderPage> {
                   child: const Icon(Icons.remove, size: 16),
                 ),
               ),
-
               Obx(() => Container(
                     margin: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
@@ -527,7 +524,6 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                   )),
-
               GestureDetector(
                 onTap: () => _updateQuantity(quantity, true),
                 child: Container(

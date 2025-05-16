@@ -71,7 +71,8 @@ class DetailController extends GetxController {
     final CartController cartController = Get.find<CartController>();
 
     Map<String, dynamic> product = {
-      'id': 9,
+      'id': Get.arguments?['id'] ??
+          1, // Menggunakan ID produk dari argumen atau default ke 1
       'name': productName,
       'price': price,
       'quantity': 1,
