@@ -95,11 +95,16 @@ class CartController extends GetxController {
   void updateQuantity(int index, bool increment) {
     if (index >= 0 && index < cartItems.length) {
       if (increment) {
-        cartItems[index]['quantity']++;
+        final updatedItem = Map<String, dynamic>.from(cartItems[index]);
+        updatedItem['quantity']++;
+        cartItems[index] = updatedItem;
       } else if (cartItems[index]['quantity'] > 1) {
-        cartItems[index]['quantity']--;
+        final updatedItem = Map<String, dynamic>.from(cartItems[index]);
+        updatedItem['quantity']--;
+        cartItems[index] = updatedItem;
       }
       saveCartToPrefs();
+      cartItems.refresh();
     }
   }
 
