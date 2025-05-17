@@ -1,13 +1,47 @@
 import 'package:get/get.dart';
 import '../../menu/model/product_model.dart';
 import '../../menu/services/product_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeController extends GetxController {
   final ProductService _productService = ProductService();
   final RxList<ProductModel> featuredProducts = <ProductModel>[].obs;
   final RxBool isLoading = true.obs;
   final RxString error = ''.obs;
-  final RxString userName = 'John Doe'.obs;
+  final RxString userName = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchUserName();
+    fetchFeaturedProducts();
+  }
+
+  Future<void> fetchUserName() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('https://campaign.rplrus.com/api/user'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final userData = jsonDecode(response.body);
+          userName.value = userData['name'] ?? '';
+        }
+      }
+    } catch (e) {
+      print('Error fetching user name: $e');
+    }
+  }
 
   final RxList<String> categories =
       <String>['Coffee', 'Non Coffee', 'Snack', 'Main Course'].obs;
@@ -57,23 +91,16 @@ class HomeController extends GetxController {
     }
   ].obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchFeaturedProducts();
-  }
-
   Future<void> fetchFeaturedProducts() async {
-  try {
-    isLoading.value = true;
-    error.value = '';
-    final response = await _productService.getProducts();
-    featuredProducts.value = response.take(5).toList(); 
-  } catch (e) {
-    error.value = e.toString();
-  } finally {
-    isLoading.value = false;
+    try {
+      isLoading.value = true;
+      error.value = '';
+      final response = await _productService.getProducts();
+      featuredProducts.value = response.take(5).toList();
+    } catch (e) {
+      error.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
-
 }
