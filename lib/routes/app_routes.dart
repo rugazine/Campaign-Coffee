@@ -10,6 +10,7 @@ import '../app/pages/history/history_page.dart';
 import '../app/pages/profile/pages/profile_page.dart';
 import '../app/pages/order/order_page.dart';
 import '../app/pages/splash/splash_screen.dart';
+import '../app/pages/profile/pages/help/help_page.dart';
 
 class AppRoutes {
   static const String auth = '/auth';
@@ -23,6 +24,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String order = '/order';
   static const String splash = '/splash';
+  static const String help = '/help';
 
   static final routes = [
     GetPage(
@@ -48,6 +50,10 @@ class AppRoutes {
     GetPage(
       name: detail,
       page: () => DetailPage(),
+    ),
+    GetPage(
+      name: help,
+      page: () => const HelpPage(),
     ),
     GetPage(
       name: bottomnav,

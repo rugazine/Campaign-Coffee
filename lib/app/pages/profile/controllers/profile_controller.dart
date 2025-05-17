@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/app/pages/profile/pages/help/help_page.dart';
 import 'package:campaign_coffee/app/pages/profile/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,7 @@ class ProfileController extends GetxController {
   }
 
   void openHelpCenter() {
-    Get.toNamed('/help-center');
+    Get.to(() => const HelpPage());
   }
 
   void openSettings() {
