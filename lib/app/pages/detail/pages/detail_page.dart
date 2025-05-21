@@ -12,6 +12,7 @@ class DetailPage extends StatelessWidget {
         productData!['name'] ?? 'Choco Choco',
         productData!['price'] ?? 15000,
         productData!['image'] ?? 'assets/images/choco_choco.jpg',
+        productData!['id'] ?? 0,
       );
     }
   }
@@ -271,7 +272,6 @@ class DetailPage extends StatelessWidget {
             }).toList(),
           ),
         ],
-      ),
-    );
-  }
+     ),);
+}
 }

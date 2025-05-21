@@ -1,10 +1,14 @@
+
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:campaign_coffee/routes/app_routes.dart';
 
 class CartController extends GetxController {
-  final RxList<Map<String, dynamic>> cartItems = <Map<String, dynamic>>[].obs;
+  final cartItems = <Map<String, dynamic>>[].obs;
+  final isLoading = false.obs;
 
   @override
   void onInit() {
@@ -12,181 +16,223 @@ class CartController extends GetxController {
     loadCartFromPrefs();
   }
 
-  Future<String?> getUserId() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString(
-          'token'); // Perhatikan token key ini, jangan sampai beda dengan token di saveCartToAPI
-      if (token != null) {
-        final response = await http.get(
-          Uri.parse('https://campaign.rplrus.com/api/user'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-        );
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    print('Token from SharedPreferences: $token');
+    return token;
+  }
 
-        if (response.statusCode == 200) {
-          final userData = jsonDecode(response.body);
-          return userData['id'].toString();
-        }
-      }
-      return null;
-    } catch (e) {
-      print('Error getting user ID: $e');
-      return null;
+  Future<void> checkAuth() async {
+    final token = await getToken();
+    if (token == null || token.isEmpty) {
+      Get.snackbar(
+        'Perhatian',
+        'Silakan login terlebih dahulu',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      Get.toNamed(AppRoutes.login);
+      return;
     }
   }
 
-  Future<void> saveCartToPrefs() async {
-    final userId = await getUserId();
-    if (userId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      final String cartJson = jsonEncode(cartItems.toList());
-      await prefs.setString('cart_items_$userId', cartJson);
-    }
+  Future<void> clearCart() async {
+    cartItems.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('cart_items');
   }
 
   Future<void> loadCartFromPrefs() async {
-    final userId = await getUserId();
-    if (userId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      final String? cartJson = prefs.getString('cart_items_$userId');
-      if (cartJson != null) {
-        final List<dynamic> decodedItems = jsonDecode(cartJson);
-        cartItems.value = List<Map<String, dynamic>>.from(decodedItems);
-      } else {
+    try {
+      final token = await getToken();
+      if (token == null) {
         cartItems.clear();
+        return;
       }
-    } else {
-      cartItems.clear();
+
+      final response = await http.get(
+        Uri.parse('https://campaign.rplrus.com/api/cart'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      print('Load Cart Response: ${response.statusCode}');
+      print('Load Cart Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List) {
+          cartItems.value = List<Map<String, dynamic>>.from(data);
+        } else if (data is Map<String, dynamic> && data.containsKey('data')) {
+          cartItems.value = List<Map<String, dynamic>>.from(data['data']);
+        } else {
+          cartItems.value = [];
+        }
+      } else if (response.statusCode == 401) {
+        cartItems.clear();
+        Get.toNamed(AppRoutes.login);
+      }
+    } catch (e) {
+      print('Error loading cart: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal memuat keranjang',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  // Clear cart dan prefs
-  Future<void> clearCart() async {
-    cartItems.clear();
-    final userId = await getUserId();
-    if (userId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('cart_items_$userId');
-    }
-  }
+  Future<void> addToCart(Map<String, dynamic> product) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        Get.snackbar(
+          'Perhatian',
+          'Silakan login terlebih dahulu',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        Get.toNamed(AppRoutes.login);
+        return;
+      }
 
-  void addToCart(Map<String, dynamic> product) {
-    int existingIndex = cartItems.indexWhere((item) =>
-        item['name'] == product['name'] &&
-        item['sugar'] == product['sugar'] &&
-        item['temperature'] == product['temperature']);
+      print('Product data received: $product');
+      final requestBody = {
+        'product_id': product['product_id'],
+        'quantity': product['quantity'] ?? 1,
+        'sugar': product['sugar'] ?? 'Normal',
+        'temperature': product['temperature'] ?? 'Ice',
+      };
+      print('Sending request to API: $requestBody');
 
-    if (existingIndex != -1) {
-      // Jika sudah ada, update quantity dengan copy map (untuk trigger reaktif)
-      final updatedItem = Map<String, dynamic>.from(cartItems[existingIndex]);
-      updatedItem['quantity'] = (updatedItem['quantity'] ?? 1) + 1;
-      cartItems[existingIndex] = updatedItem;
-    } else {
-      // Baru, pastikan ada quantity
-      final newItem = Map<String, dynamic>.from(product);
-      newItem['quantity'] = 1;
-      cartItems.add(newItem);
-    }
+      final response = await http.post(
+        Uri.parse('https://campaign.rplrus.com/api/cart'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestBody),
+      );
 
-    saveCartToPrefs();
-    saveCartToAPI(product);
+      print('Add to Cart Response: ${response.statusCode}');
+      print('Add to Cart Body: ${response.body}');
 
-    Get.snackbar(
-      'Berhasil',
-      '${product["name"]} ditambahkan ke keranjang',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
-  void updateQuantity(int index, bool increment) {
-    if (index >= 0 && index < cartItems.length) {
-      final currentItem = cartItems[index];
-      int currentQty = currentItem['quantity'] ?? 1;
-
-      if (increment) {
-        final updatedItem = Map<String, dynamic>.from(currentItem);
-        updatedItem['quantity'] = currentQty + 1;
-        cartItems[index] = updatedItem;
-      } else if (currentQty > 1) {
-        final updatedItem = Map<String, dynamic>.from(currentItem);
-        updatedItem['quantity'] = currentQty - 1;
-        cartItems[index] = updatedItem;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        await loadCartFromPrefs(); // Refresh cart data from server
+        Get.snackbar(
+          'Sukses',
+          responseData['message'] ?? 'Berhasil menambahkan ke keranjang',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       } else {
-        // Kalau quantity sudah 1 dan dikurangi, hapus item
-        removeItem(index);
-        return; // skip saveCartToPrefs dan refresh karena sudah di removeItem
+        throw Exception(json.decode(response.body)['message'] ?? 'Gagal menambahkan ke keranjang');
       }
-
-      saveCartToPrefs();
-      cartItems.refresh();
-    }
-  }
-
-  void removeItem(int index) {
-    if (index >= 0 && index < cartItems.length) {
-      cartItems.removeAt(index);
-      saveCartToPrefs();
-      cartItems.refresh();
+    } catch (e) {
+      print('Error adding to cart: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal menambahkan ke keranjang: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
   double get total {
     return cartItems.fold(
-      0,
+      0.0,
       (sum, item) {
-        final price = item['price'];
+        final price = item['product']?['price'] ?? item['price'] ?? '0';
         final quantity = item['quantity'] ?? 1;
-        double priceDouble = 0;
-
-        if (price is int) {
-          priceDouble = price.toDouble();
-        } else if (price is double) {
-          priceDouble = price;
-        }
-
-        return sum + (priceDouble * quantity);
+        return sum + (double.parse(price.toString()) * quantity);
       },
     );
   }
 
-  Future<void> saveCartToAPI(Map<String, dynamic> product) async {
+  Future<void> updateQuantity(int index, bool increment) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString(
-          'token'); // Disini juga pake 'token' supaya konsisten dengan getUserId
+      final token = await getToken();
+      if (token == null) {
+        Get.toNamed(AppRoutes.login);
+        return;
+      }
 
-      final response = await http.post(
-        Uri.parse('https://campaign.rplrus.com/api/cart'),
+      final item = cartItems[index];
+      final newQuantity = increment ? item['quantity'] + 1 : item['quantity'] - 1;
+
+      if (newQuantity <= 0) {
+        await removeItem(index);
+        return;
+      }
+
+      final response = await http.put(
+        Uri.parse('https://campaign.rplrus.com/api/cart/${item['id']}'),
         headers: {
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': token != null ? 'Bearer $token' : '',
         },
-        body: jsonEncode({
-          'product_id': product['id'] ?? 1,
-          'quantity': product['quantity'] ?? 1,
-        }),
+        body: json.encode({'quantity': newQuantity}),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Item berhasil disimpan ke API');
-        print(response.body);
+      print('Update Quantity Response: ${response.statusCode}');
+      print('Update Quantity Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        await loadCartFromPrefs(); // Refresh cart from server
       } else if (response.statusCode == 401) {
-        print('Autentikasi diperlukan untuk menyimpan ke keranjang');
-        Get.snackbar(
-          'Perhatian',
-          'Silakan login untuk menyimpan item ke keranjang',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      } else {
-        print('Gagal menyimpan item ke API: ${response.statusCode}');
-        print(response.body);
+        Get.toNamed(AppRoutes.login);
       }
     } catch (e) {
-      print('Error saat menyimpan ke API: $e');
+      print('Error updating quantity: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal mengubah jumlah',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
+
+  Future<void> removeItem(int index) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        Get.toNamed(AppRoutes.login);
+        return;
+      }
+
+      final item = cartItems[index];
+      final response = await http.delete(
+        Uri.parse('https://campaign.rplrus.com/api/cart/${item['id']}'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      print('Remove Item Response: ${response.statusCode}');
+      print('Remove Item Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        await loadCartFromPrefs(); // Refresh cart from server
+      } else if (response.statusCode == 401) {
+        Get.toNamed(AppRoutes.login);
+      }
+    } catch (e) {
+      print('Error removing item: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus item',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+    );
+}
+}
 }

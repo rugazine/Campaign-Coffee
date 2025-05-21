@@ -159,6 +159,7 @@ class _MenuPageState extends State<MenuPage> {
                                       child: InkWell(
                                         onTap: () => Get.to(
                                             () => DetailPage(productData: {
+                                                  'id': product.id,
                                                   'name': product.name,
                                                   'price': product.price,
                                                   'image': product.image,
@@ -238,6 +239,6 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ),
       );
-    });
-  }
+});
+}
 }

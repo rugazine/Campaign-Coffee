@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 import 'package:campaign_coffee/app/pages/menu/services/product_service.dart';
-import 'package:get/get.dart';
 
 class DetailController extends GetxController {
   final _selectedSugar = 'Normal'.obs;
@@ -11,6 +10,7 @@ class DetailController extends GetxController {
   final _price = 15000.obs;
   final _productName = 'Choco Choco'.obs;
   final _productImage = 'assets/images/choco_choco.jpg'.obs;
+  final _productId = 0.obs;
 
   String get selectedSugar => _selectedSugar.value;
   String get selectedTemperature => _selectedTemperature.value;
@@ -18,6 +18,7 @@ class DetailController extends GetxController {
   int get price => _price.value;
   String get productName => _productName.value;
   String get productImage => _productImage.value;
+  int get productId => _productId.value;
 
   void setSugar(String sugar) {
     _selectedSugar.value = sugar;
@@ -36,12 +37,22 @@ class DetailController extends GetxController {
 
   final ProductService _productService = ProductService();
 
-  void setProductData(String? name, dynamic productPrice, String? image) {
+  @override
+  void onInit() {
+    super.onInit();
+    if (Get.arguments != null && Get.arguments['id'] != null) {
+      _productId.value = Get.arguments['id'];
+      fetchProductDetail(_productId.value);
+    }
+  }
+
+  void setProductData(String? name, dynamic productPrice, String? image, int? id) {
     _productName.value = name ?? 'Choco Choco';
     _price.value = (productPrice is double)
         ? productPrice.toInt()
         : (productPrice ?? 15000);
     _productImage.value = image ?? 'assets/images/choco_choco.jpg';
+    _productId.value = id ?? 0;
   }
 
   Future<void> fetchProductDetail(int productId) async {
@@ -53,8 +64,10 @@ class DetailController extends GetxController {
         product.name,
         product.price,
         product.image,
+        product.id,
       );
     } catch (e) {
+      print('Error fetching product detail: $e');
       Get.snackbar(
         'Error',
         'Gagal memuat detail produk: ${e.toString()}',
@@ -67,20 +80,34 @@ class DetailController extends GetxController {
     }
   }
 
-  void addToCart() {
-    final CartController cartController = Get.find<CartController>();
+  Future<void> addToCart() async {
+    try {
+      if (!Get.isRegistered<CartController>()) {
+        Get.put(CartController());
+      }
+      final cartController = Get.find<CartController>();
 
-    Map<String, dynamic> product = {
-      'id': Get.arguments?['id'] ??
-          1, // Menggunakan ID produk dari argumen atau default ke 1
-      'name': productName,
-      'price': price,
-      'quantity': 1,
-      'image': productImage,
-      'sugar': selectedSugar,
-      'temperature': selectedTemperature,
-    };
+      print('Adding product to cart with ID: $_productId');
+      Map<String, dynamic> product = {
+        'product_id': _productId.value,
+        'name': productName,
+        'price': price,
+        'quantity': 1,
+        'image': productImage,
+        'sugar': selectedSugar,
+        'temperature': selectedTemperature,
+      };
 
-    cartController.addToCart(product);
-  }
+      await cartController.addToCart(product);
+    } catch (e) {
+      print('Error in DetailController addToCart: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal menambahkan ke keranjang: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+    );
+}
+}
 }

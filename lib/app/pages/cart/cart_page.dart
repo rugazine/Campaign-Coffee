@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
@@ -102,19 +103,18 @@ class _CartPageState extends State<CartPage> {
                                     itemCount: cartController.cartItems.length,
                                     padding: const EdgeInsets.all(16),
                                     itemBuilder: (context, index) {
-                                      final item =
-                                          cartController.cartItems[index];
+                                      final item = cartController.cartItems[index];
+                                      final product = item['product'] ?? item;
                                       return GestureDetector(
                                           onTap: () {
                                             Get.toNamed('/detail', arguments: {
                                               'productData': {
-                                                'name': item['name'],
-                                                'price': item['price'],
-                                                'image': item['image'],
-                                                'sugar':
-                                                    item['sugar'] ?? 'Normal',
-                                                'temperature':
-                                                    item['temperature'] ?? 'Ice'
+                                                'id': product['id'],
+                                                'name': product['name'],
+                                                'price': product['price'],
+                                                'image': product['image'],
+                                                'sugar': item['sugar'] ?? 'Normal',
+                                                'temperature': item['temperature'] ?? 'Ice'
                                               }
                                             });
                                           },
@@ -167,7 +167,7 @@ class _CartPageState extends State<CartPage> {
                                                           BorderRadius.circular(
                                                               12),
                                                       child: Image.network(
-                                                        item['image'],
+                                                        product['image'],
                                                         width: 85,
                                                         height: 85,
                                                         fit: BoxFit.cover,
@@ -214,7 +214,7 @@ class _CartPageState extends State<CartPage> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          item['name'],
+                                                          product['name'],
                                                           style:
                                                               const TextStyle(
                                                             fontSize: 15,
@@ -229,7 +229,7 @@ class _CartPageState extends State<CartPage> {
                                                         const SizedBox(
                                                             height: 6),
                                                         Text(
-                                                          'Rp ${item['price']}',
+                                                          'Rp ${product['price']}',
                                                           style: TextStyle(
                                                             fontSize: 13,
                                                             color: Colors
@@ -495,6 +495,6 @@ class _CartPageState extends State<CartPage> {
               ),
             ],
           ),
-        ));
-  }
+));
+}
 }
