@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/app/pages/profile/pages/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
@@ -124,7 +125,7 @@ class ProfilePage extends GetView<ProfileController> {
                         )),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () => Get.toNamed('/edit-profile'),
+                      onPressed: () => Get.to(() => EditProfilePage()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: mainBlue,
                         padding: const EdgeInsets.symmetric(

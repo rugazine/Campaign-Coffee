@@ -4,27 +4,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CartController extends GetxController {
+  final RxList<Map<String, dynamic>> cartItems = <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     loadCartFromPrefs();
   }
 
-  Future<void> clearCart() async {
-    cartItems.clear();
-    final userId = await getUserId();
-    if (userId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('cart_items_$userId');
-    }
-  }
-
-  final RxList<Map<String, dynamic>> cartItems = <Map<String, dynamic>>[].obs;
-
   Future<String?> getUserId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString('token');
+      final String? token = prefs.getString(
+          'token'); // Perhatikan token key ini, jangan sampai beda dengan token di saveCartToAPI
       if (token != null) {
         final response = await http.get(
           Uri.parse('https://campaign.rplrus.com/api/user'),
@@ -71,6 +63,16 @@ class CartController extends GetxController {
     }
   }
 
+  // Clear cart dan prefs
+  Future<void> clearCart() async {
+    cartItems.clear();
+    final userId = await getUserId();
+    if (userId != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('cart_items_$userId');
+    }
+  }
+
   void addToCart(Map<String, dynamic> product) {
     int existingIndex = cartItems.indexWhere((item) =>
         item['name'] == product['name'] &&
@@ -78,13 +80,20 @@ class CartController extends GetxController {
         item['temperature'] == product['temperature']);
 
     if (existingIndex != -1) {
-      cartItems[existingIndex]['quantity']++;
+      // Jika sudah ada, update quantity dengan copy map (untuk trigger reaktif)
+      final updatedItem = Map<String, dynamic>.from(cartItems[existingIndex]);
+      updatedItem['quantity'] = (updatedItem['quantity'] ?? 1) + 1;
+      cartItems[existingIndex] = updatedItem;
     } else {
-      cartItems.add(product);
+      // Baru, pastikan ada quantity
+      final newItem = Map<String, dynamic>.from(product);
+      newItem['quantity'] = 1;
+      cartItems.add(newItem);
     }
 
     saveCartToPrefs();
     saveCartToAPI(product);
+
     Get.snackbar(
       'Berhasil',
       '${product["name"]} ditambahkan ke keranjang',
@@ -94,15 +103,23 @@ class CartController extends GetxController {
 
   void updateQuantity(int index, bool increment) {
     if (index >= 0 && index < cartItems.length) {
+      final currentItem = cartItems[index];
+      int currentQty = currentItem['quantity'] ?? 1;
+
       if (increment) {
-        final updatedItem = Map<String, dynamic>.from(cartItems[index]);
-        updatedItem['quantity']++;
+        final updatedItem = Map<String, dynamic>.from(currentItem);
+        updatedItem['quantity'] = currentQty + 1;
         cartItems[index] = updatedItem;
-      } else if (cartItems[index]['quantity'] > 1) {
-        final updatedItem = Map<String, dynamic>.from(cartItems[index]);
-        updatedItem['quantity']--;
+      } else if (currentQty > 1) {
+        final updatedItem = Map<String, dynamic>.from(currentItem);
+        updatedItem['quantity'] = currentQty - 1;
         cartItems[index] = updatedItem;
+      } else {
+        // Kalau quantity sudah 1 dan dikurangi, hapus item
+        removeItem(index);
+        return; // skip saveCartToPrefs dan refresh karena sudah di removeItem
       }
+
       saveCartToPrefs();
       cartItems.refresh();
     }
@@ -112,21 +129,34 @@ class CartController extends GetxController {
     if (index >= 0 && index < cartItems.length) {
       cartItems.removeAt(index);
       saveCartToPrefs();
+      cartItems.refresh();
     }
   }
 
   double get total {
     return cartItems.fold(
       0,
-      (sum, item) => sum + (item['price'] as int) * (item['quantity'] as int),
+      (sum, item) {
+        final price = item['price'];
+        final quantity = item['quantity'] ?? 1;
+        double priceDouble = 0;
+
+        if (price is int) {
+          priceDouble = price.toDouble();
+        } else if (price is double) {
+          priceDouble = price;
+        }
+
+        return sum + (priceDouble * quantity);
+      },
     );
   }
 
   Future<void> saveCartToAPI(Map<String, dynamic> product) async {
     try {
-      // Mendapatkan token dari SharedPreferences atau sistem autentikasi
       final prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString('auth_token');
+      final String? token = prefs.getString(
+          'token'); // Disini juga pake 'token' supaya konsisten dengan getUserId
 
       final response = await http.post(
         Uri.parse('https://campaign.rplrus.com/api/cart'),

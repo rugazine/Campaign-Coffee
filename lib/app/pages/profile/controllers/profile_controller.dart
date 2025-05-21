@@ -22,11 +22,62 @@ class ProfileController extends GetxController {
   }
 
   // Method to update profile information
-  void updateProfile(
-      {String? newName, String? newEmail, String? newProfileImage}) {
-    if (newName != null) name.value = newName;
-    if (newEmail != null) email.value = newEmail;
-    if (newProfileImage != null) profileImage.value = newProfileImage;
+  Future<void> updateProfile({
+    String? newName,
+    String? newEmail,
+    String? newPhone,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        Get.offAllNamed('/auth');
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://campaign.rplrus.com/api/user/update'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'name': newName ?? name.value,
+          'email': newEmail ?? email.value,
+          'phone': newPhone,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        if (newName != null) name.value = newName;
+        if (newEmail != null) email.value = newEmail;
+        Get.snackbar(
+          'Sukses',
+          'Profil berhasil diperbarui',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Gagal memperbarui profil',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Color(0xFFE57373),
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   void toggleNotifications() {
