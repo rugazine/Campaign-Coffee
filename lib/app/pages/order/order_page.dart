@@ -258,7 +258,7 @@ class _OrderPageState extends State<OrderPage> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.network(
-                                  item['image'],
+                                  item['product']['image'] ?? item['image'],
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,
@@ -280,7 +280,7 @@ class _OrderPageState extends State<OrderPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item['name'],
+                                      item['product']['name'] ?? item['name'],
                                       style: const TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 16,
@@ -289,7 +289,7 @@ class _OrderPageState extends State<OrderPage> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Rp ${item['price']}',
+                                      'Rp ${item['product']['price'] ?? item['price']}',
                                       style: const TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 14,
