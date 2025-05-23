@@ -10,7 +10,7 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final RxInt selectedIndex = 0.obs;
+    final RxInt selectedIndex = Get.find<RxInt>();
 
     final List<Widget> pages = [
       HomePage(),

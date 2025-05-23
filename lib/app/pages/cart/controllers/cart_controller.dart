@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -124,15 +123,9 @@ class CartController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = json.decode(response.body);
         await loadCartFromPrefs(); // Refresh cart data from server
-        Get.snackbar(
-          'Sukses',
-          responseData['message'] ?? 'Berhasil menambahkan ke keranjang',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
       } else {
-        throw Exception(json.decode(response.body)['message'] ?? 'Gagal menambahkan ke keranjang');
+        throw Exception(json.decode(response.body)['message'] ??
+            'Gagal menambahkan ke keranjang');
       }
     } catch (e) {
       print('Error adding to cart: $e');
@@ -166,7 +159,8 @@ class CartController extends GetxController {
       }
 
       final item = cartItems[index];
-      final newQuantity = increment ? item['quantity'] + 1 : item['quantity'] - 1;
+      final newQuantity =
+          increment ? item['quantity'] + 1 : item['quantity'] - 1;
 
       if (newQuantity <= 0) {
         await removeItem(index);
@@ -232,7 +226,7 @@ class CartController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
-    );
-}
-}
+      );
+    }
+  }
 }

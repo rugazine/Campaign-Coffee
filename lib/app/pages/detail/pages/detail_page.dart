@@ -1,4 +1,5 @@
 import 'package:campaign_coffee/app/pages/detail/controller/detail_controller.dart';
+import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,7 +27,7 @@ class DetailPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
+                  onPressed: () => Get.off('/menu'),
         ),
         title: const Text(
           'Detail',
@@ -182,42 +183,55 @@ class DetailPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Obx(() => Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('Price',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey)),
-                          Text(
-                            'Rp.${controller.price}',
-                            style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 8, 76, 172)),
+                          const Text(
+                            'Price',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
+                          Obx(() => Text(
+                                'Rp.${controller.price}',
+                                style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 8, 76, 172)),
+                              )),
                         ],
-                      )),
-                  ElevatedButton(
-                    onPressed: controller.addToCart,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 8, 76, 172),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text(
-                      'Add To Cart',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 70),
+                          child: ElevatedButton(
+                            onPressed: controller.addToCart,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 8, 76, 172),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Add To Cart',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -272,6 +286,7 @@ class DetailPage extends StatelessWidget {
             }).toList(),
           ),
         ],
-     ),);
-}
+      ),
+    );
+  }
 }

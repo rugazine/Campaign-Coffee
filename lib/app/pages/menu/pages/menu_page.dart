@@ -1,3 +1,4 @@
+import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -46,20 +47,44 @@ class _MenuPageState extends State<MenuPage> {
     return Obx(() {
       return Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => Get.toNamed('/cart'),
-          backgroundColor: mainBlue,
-          elevation: 4,
-          icon: const Icon(Icons.shopping_cart, color: Colors.white),
-          label: const Text(
-            'Cart',
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        floatingActionButton: GetX<CartController>(builder: (controller) {
+          return controller.cartItems.isNotEmpty
+              ? FloatingActionButton(
+                  backgroundColor: mainBlue,
+                  onPressed: () {
+                    Get.offAllNamed('/bottomnav');
+                    Get.find<RxInt>().value = 1; // Set cart tab as active
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(
+                        Icons.shopping_cart,
+                        color: Colors.white,
+                      ),
+                      Positioned(
+                        right: -8,
+                        top: -8,
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${controller.cartItems.length}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : SizedBox.shrink();
+        }),
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -78,7 +103,10 @@ class _MenuPageState extends State<MenuPage> {
                     IconButton(
                       icon: const Icon(Icons.arrow_back,
                           color: Color.fromARGB(255, 5, 5, 5)),
-                      onPressed: () => Get.back(),
+                      onPressed: () {
+                        Get.offAllNamed('/bottomnav');
+                        Get.find<RxInt>().value = 0; // Set home tab as active
+                      },
                     ),
                     Container(
                       width: 270,
@@ -104,7 +132,7 @@ class _MenuPageState extends State<MenuPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 40),
               SizedBox(
                 height: 100,
                 child: SingleChildScrollView(
