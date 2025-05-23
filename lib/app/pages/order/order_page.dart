@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/order/controllers/order_controller.dart';
+import 'widgets/edit_address_dialog.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -172,7 +173,15 @@ class _OrderPageState extends State<OrderPage> {
                             if (orderController.isDelivery.value) ...[
                               const SizedBox(height: 12),
                               OutlinedButton.icon(
-                                onPressed: () => orderController.processOrder(),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return EditAddressDialog(
+                                          orderController: orderController);
+                                    },
+                                  );
+                                },
                                 icon: const Icon(Icons.edit_location_outlined,
                                     size: 16),
                                 label: const Text('Edit Address'),
