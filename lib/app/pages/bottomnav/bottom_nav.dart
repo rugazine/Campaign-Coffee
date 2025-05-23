@@ -13,10 +13,10 @@ class BottomNav extends StatelessWidget {
     final RxInt selectedIndex = 0.obs;
 
     final List<Widget> pages = [
-       HomePage(),
-       CartPage(),
-       HistoryPage(),
-       ProfilePage(),
+      HomePage(),
+      CartPage(),
+      HistoryPage(),
+      ProfilePage(),
     ];
 
     return Scaffold(

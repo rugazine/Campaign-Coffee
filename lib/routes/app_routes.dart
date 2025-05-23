@@ -1,4 +1,5 @@
 import 'package:campaign_coffee/app/pages/bottomnav/bottom_nav.dart';
+import 'package:campaign_coffee/app/pages/cart/cart_page.dart';
 import 'package:get/get.dart';
 import '../app/pages/auth/auth/auth_page.dart';
 import '../app/pages/auth/Login/login_page.dart';
@@ -25,6 +26,8 @@ class AppRoutes {
   static const String order = '/order';
   static const String splash = '/splash';
   static const String help = '/help';
+    static const String cart = '/cart';
+
 
   static final routes = [
     GetPage(
@@ -74,6 +77,10 @@ class AppRoutes {
     GetPage(
       name: order,
       page: () => OrderPage(),
+    ),
+    GetPage(
+      name: cart,
+      page: () => CartPage(),
     ),
   ];
 }

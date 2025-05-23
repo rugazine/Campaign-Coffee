@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/detail/pages/detail_page.dart';
-import 'package:campaign_coffee/app/pages/menu/controllers/menu_controller.dart' as custom;
+import 'package:campaign_coffee/app/pages/menu/controllers/menu_controller.dart'
+    as custom;
 
 class MenuPage extends StatefulWidget {
   final String? initialCategory;
@@ -19,8 +20,7 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   static const mainBlue = Color.fromARGB(255, 8, 76, 172);
 
-  final custom.MenuController menuController =
-      Get.put(custom.MenuController());
+  final custom.MenuController menuController = Get.put(custom.MenuController());
 
   final List<Map<String, dynamic>> categories = [
     {'icon': 'assets/images/coffee.svg', 'label': 'Coffee'},
@@ -46,6 +46,20 @@ class _MenuPageState extends State<MenuPage> {
     return Obx(() {
       return Scaffold(
         backgroundColor: Colors.white,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => Get.toNamed('/cart'),
+          backgroundColor: mainBlue,
+          elevation: 4,
+          icon: const Icon(Icons.shopping_cart, color: Colors.white),
+          label: const Text(
+            'Cart',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -58,22 +72,36 @@ class _MenuPageState extends State<MenuPage> {
               const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  width: 320,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 9),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back,
+                          color: Color.fromARGB(255, 5, 5, 5)),
+                      onPressed: () => Get.back(),
                     ),
-                  ),
+                    Container(
+                      width: 270,
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          prefixIcon:
+                              Icon(Icons.search, color: Colors.grey[600]),
+                          border: InputBorder.none,
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 9),
+                        ),
+                        onChanged: (value) =>
+                            menuController.setSearchQuery(value),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 50),
@@ -239,6 +267,6 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ),
       );
-});
-}
+    });
+  }
 }

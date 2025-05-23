@@ -46,7 +46,8 @@ class DetailController extends GetxController {
     }
   }
 
-  void setProductData(String? name, dynamic productPrice, String? image, int? id) {
+  void setProductData(
+      String? name, dynamic productPrice, String? image, int? id) {
     _productName.value = name ?? 'Choco Choco';
     _price.value = (productPrice is double)
         ? productPrice.toInt()
@@ -99,6 +100,8 @@ class DetailController extends GetxController {
       };
 
       await cartController.addToCart(product);
+
+      Get.offNamed('/menu');
     } catch (e) {
       print('Error in DetailController addToCart: $e');
       Get.snackbar(
@@ -107,7 +110,7 @@ class DetailController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
-    );
-}
-}
+      );
+    }
+  }
 }
