@@ -106,7 +106,7 @@ class ProfileController extends GetxController {
         final data = jsonDecode(response.body);
         name.value = data['name'] ?? '';
         email.value = data['email'] ?? '';
-        profileImage.value = data['avatar'] ?? 'assets/images/kyrie.jpg';
+        profileImage.value = data['avatar'] ?? 'assets/images/Rhope.png';
       } else {
         Get.snackbar(
           'Error',
