@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
+import 'package:flutter/material.dart';
 
 class OrderController extends GetxController {
   // Delivery method options
@@ -47,5 +48,45 @@ class OrderController extends GetxController {
     print('Processing order with ${cartController.cartItems.length} items');
     print('Delivery method: ${isDelivery.value ? "Delivery" : "Pickup"}');
     print('Total price: Rp ${totalPrice.toStringAsFixed(0)}');
+
+    // Show success popup with checkmark icon
+    Get.defaultDialog(
+      title: '',
+      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+      titlePadding: EdgeInsets.zero,
+      content: Stack(
+        children: [
+          Column(
+            children: [
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF084CAC).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF084CAC),
+                  size: 50,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Pesan Kamu berhasil dibuat',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF084CAC),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      radius: 15,
+    );
   }
 }
