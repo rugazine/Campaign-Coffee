@@ -43,9 +43,15 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Scaffold(
+        appBar: AppBar(title: const Text('Memuat Pembayaran')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
-    return WebViewWidget(controller: _controller);
-  }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pembayaran Midtrans')),
+      body: WebViewWidget(controller: _controller),
+);
+}
 }

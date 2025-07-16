@@ -183,18 +183,18 @@ class _CartPageState extends State<CartPage> {
                                           },
                                           child: GestureDetector(
                                               onTap: () {
-                                                final product = item['product'] ?? item;
-                                                Get.toNamed('/detail',
-                                                    arguments: {
-                                                      'productData': {
-                                                        'id': int.tryParse(product['id'].toString()) ?? 0,
-                                                        'name': product['name'],
-                                                        'price': double.tryParse((product['price'] ?? item['price'] ?? '0').toString())?.toInt() ?? 0,
-                                                        'image': product['image'],
-                                                        'sugar': item['sugar'] ?? 'Normal',
-                                                        'temperature': item['temperature'] ?? 'Ice'
-                                                      }
-                                                    });
+                                                // final product = item['product'] ?? item;
+                                                // Get.toNamed('/detail',
+                                                //     arguments: {
+                                                //       'productData': {
+                                                //         'id': int.tryParse(product['id'].toString()) ?? 0,
+                                                //         'name': product['name'],
+                                                //         'price': double.tryParse((product['price'] ?? item['price'] ?? '0').toString())?.toInt() ?? 0,
+                                                //         'image': product['image'],
+                                                //         'sugar': item['sugar'] ?? 'Normal',
+                                                //         'temperature': item['temperature'] ?? 'Ice'
+                                                //       }  
+                                                //     });
                                               },
                                               child: Container(
                                                 margin: const EdgeInsets.only(

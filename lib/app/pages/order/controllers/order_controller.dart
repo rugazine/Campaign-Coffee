@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 import 'package:campaign_coffee/app/model/order_model.dart';
 import 'package:campaign_coffee/app/services/order_services.dart';
-import 'package:campaign_coffee/Midtrans/midtrans_payment_page.dart';
+import 'package:campaign_coffee/Midtrans/midtrans_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -145,13 +145,16 @@ class OrderController extends GetxController {
         throw Exception('Snap token tidak ditemukan di response: ' + paymentRes.body.toString());
       }
 
-      // 3. Buka halaman pembayaran Midtrans
-      final result = await Get.to(() => MidtransPaymentPage(snapToken: snapToken));
+      // 3. Buka dialog pembayaran Midtrans
+      final result = await MidtransDialog.showPaymentDialog(context, snapToken);
       if (result == 'success') {
         try {
           await waitForOrderPaidWithLoading(context, orderId); // Polling status order dengan loading
           await cartController.clearCart();
-          Get.offAllNamed('/order');
+          // Navigasi ke halaman history di bottom nav (indeks 2)
+          Get.offAllNamed('/bottomnav');
+          // Set indeks bottom navigation ke halaman history (indeks 2)
+          Get.find<RxInt>().value = 2;
           Get.snackbar('Sukses', 'Pesanan berhasil dibuat', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
         } catch (_) {
           Get.snackbar('Pembayaran belum selesai', 'Silakan tunggu beberapa saat lalu cek kembali status pesanan.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
@@ -162,7 +165,10 @@ class OrderController extends GetxController {
       final status = await getOrderStatus(orderId);
       if (status == 'paid' || status == 'settlement' || status == 'completed') {
         await cartController.clearCart();
-        Get.offAllNamed('/order');
+        // Navigasi ke halaman history di bottom nav (indeks 2)
+        Get.offAllNamed('/bottomnav');
+        // Set indeks bottom navigation ke halaman history (indeks 2)
+        Get.find<RxInt>().value = 2;
         Get.snackbar('Sukses', 'Pesanan berhasil dibuat', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
       } else {
         Get.snackbar('Pembayaran belum selesai', 'Silakan selesaikan pembayaran untuk pesanan ini.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);

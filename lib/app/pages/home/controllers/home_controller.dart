@@ -90,7 +90,7 @@ class HomeController extends GetxController {
     try {
       final response = await _productService.getProducts();
       // Ambil 4 produk teratas sebagai rekomendasi
-      recommendedProducts.value = response.take(4).toList();
+      recommendedProducts.value = response.take(6).toList();
     } catch (e) {
       print('Error fetching recommended products: $e');
     }
