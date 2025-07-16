@@ -19,16 +19,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
+    // Untuk sementara, selalu arahkan ke halaman auth/login
+    // meskipun sudah ada token, untuk mempermudah testing
     await Future.delayed(const Duration(seconds: 3));
 
-    if (token != null) {
-      Get.offAllNamed(AppRoutes.bottomnav);
-    } else {
+    // Selalu arahkan ke auth page
       Get.offAllNamed(AppRoutes.auth);
-    }
+    
+    // Kode asli (dikomentari untuk sementara):
+    // final prefs = await SharedPreferences.getInstance();
+    // final token = prefs.getString('token');
+    // 
+    // await Future.delayed(const Duration(seconds: 3));
+    // 
+    // if (token != null) {
+    //   Get.offAllNamed(AppRoutes.bottomnav);
+    // } else {
+    //   Get.offAllNamed(AppRoutes.auth);
+    // }
   }
 
   @override

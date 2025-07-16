@@ -336,24 +336,6 @@ class _OrderPageState extends State<OrderPage> {
                       },
                     )),
               const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: () => orderController.processOrder(),
-                icon: const Icon(Icons.notes_outlined, size: 16),
-                label: const Text('Add Note'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.black54,
-                  side: const BorderSide(color: Colors.grey),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                  ),
-                ),
-              ),
               const SizedBox(height: 16),
               const SizedBox(height: 24),
               const Text(
@@ -437,7 +419,7 @@ class _OrderPageState extends State<OrderPage> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () => orderController.processOrder(),
+          onPressed: () => orderController.checkoutAndPay(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: mainBlue,
             foregroundColor: Colors.white,

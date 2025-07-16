@@ -11,9 +11,7 @@ Future<List<ProductModel>> getProducts() async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonMap = json.decode(response.body);
-
       final List<dynamic> dataList = jsonMap['data'];
-
       return dataList.map((item) => ProductModel.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load products: ${response.statusCode}');
@@ -22,7 +20,6 @@ Future<List<ProductModel>> getProducts() async {
     throw Exception('Failed to connect to server: $e');
   }
 }
-
 
   Future<ProductModel> getProductById(int id) async {
     try {

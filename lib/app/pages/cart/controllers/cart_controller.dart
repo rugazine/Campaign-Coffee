@@ -41,6 +41,20 @@ class CartController extends GetxController {
     cartItems.clear();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('cart_items');
+    // Hapus cart di backend juga
+    try {
+      final token = await getToken();
+      if (token != null) {
+        final response = await http.delete(
+          Uri.parse('https://campaign.rplrus.com/api/cart'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+        print('Clear Cart (server) Response: ${response.statusCode}');
+        print('Clear Cart (server) Body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error clearing cart on server: ${e.toString()}');
+    }
   }
 
   Future<void> loadCartFromPrefs() async {
@@ -159,27 +173,35 @@ class CartController extends GetxController {
       }
 
       final item = cartItems[index];
-      final newQuantity =
-          increment ? item['quantity'] + 1 : item['quantity'] - 1;
+      final product = item['product'] ?? item;
+      final int productId = int.tryParse(product['id'].toString()) ?? 0;
+      final int currentQty = int.tryParse(item['quantity'].toString()) ?? 1;
+      final int newQuantity = increment ? currentQty + 1 : currentQty - 1;
 
       if (newQuantity <= 0) {
         await removeItem(index);
         return;
       }
 
-      final response = await http.put(
-        Uri.parse('https://campaign.rplrus.com/api/cart/${item['id']}'),
+      // Ganti dari PUT ke POST
+      final response = await http.post(
+        Uri.parse('https://campaign.rplrus.com/api/cart'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: json.encode({'quantity': newQuantity}),
+        body: json.encode({
+          'product_id': productId,
+          'quantity': newQuantity,
+          'sugar': item['sugar'] ?? 'Normal',
+          'temperature': item['temperature'] ?? 'Ice',
+        }),
       );
 
       print('Update Quantity Response: ${response.statusCode}');
       print('Update Quantity Body: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         await loadCartFromPrefs(); // Refresh cart from server
       } else if (response.statusCode == 401) {
         Get.toNamed(AppRoutes.login);

@@ -96,10 +96,7 @@ class ProfileController extends GetxController {
 
       final response = await http.get(
         Uri.parse('https://campaign.rplrus.com/api/user'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {

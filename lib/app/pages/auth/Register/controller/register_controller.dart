@@ -16,7 +16,7 @@ class RegisterController extends GetxController {
   Future<void> register() async {
     isLoading.value = true;
 
-    final url = Uri.parse('https://37b8-103-164-229-141.ngrok-free.app/api/register');
+    final url = Uri.parse('https://campaign.rplrus.com/api/register');
 
     try {
       final response = await http.post(

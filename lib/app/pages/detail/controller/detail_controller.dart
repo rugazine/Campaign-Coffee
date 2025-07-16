@@ -92,14 +92,17 @@ class DetailController extends GetxController {
       Map<String, dynamic> product = {
         'product_id': _productId.value,
         'name': productName,
-        'price': price,
+        'price': price, // harga produk asli
         'quantity': 1,
         'image': productImage,
-        'sugar': selectedSugar,
-        'temperature': selectedTemperature,
+        'sugar': selectedSugar, // pilihan user
+        'temperature': selectedTemperature, // pilihan user
       };
 
       await cartController.addToCart(product);
+
+      // Setelah berhasil tambah ke cart, reload cart dari server
+      await cartController.loadCartFromPrefs();
 
       Get.offNamed('/menu');
     } catch (e) {

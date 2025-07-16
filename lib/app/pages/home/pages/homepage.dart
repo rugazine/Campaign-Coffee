@@ -76,29 +76,46 @@ class HomePage extends GetView<HomeController> {
                       ),
                     ),
 
+                    // PROMO
                     SizedBox(
                       height: 160,
-                      child: SingleChildScrollView(
+                      child: Obx(() => controller.promoCards.isEmpty
+                          ? Center(child: Text('No promo available', style: TextStyle(color: Colors.white)))
+                          : ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          bottom: 20,
-                        ),
-                        child: Row(
-                          children: [
-                            ...controller.promoCards
-                                .map((promo) => Row(
+                              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                              itemCount: controller.promoCards.length,
+                              separatorBuilder: (_, __) => const SizedBox(width: 16),
+                              itemBuilder: (context, index) {
+                                final promo = controller.promoCards[index];
+                                return Container(
+                                  width: 304,
+                                  height: 130,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    image: promo['image'] != null && promo['image'].toString().startsWith('http')
+                                        ? DecorationImage(
+                                            image: NetworkImage(promo['image']),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        _buildPromoCard(),
-                                        const SizedBox(width: 16),
-                                      ],
-                                    ))
-                                .toList(),
+                                        Text(promo['tag'] ?? '', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                                        SizedBox(height: 4),
+                                        Text(promo['title'] ?? '', style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
+                                );
+                              },
+                            )),
                     ),
                   ],
                 ),
@@ -166,7 +183,9 @@ class HomePage extends GetView<HomeController> {
                     ),
 
                     const SizedBox(height: 15),
-                    Obx(() => GridView.count(
+                    Obx(() => controller.recommendedProducts.isEmpty
+                        ? Center(child: Text('No recommendation'))
+                        : GridView.count(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           crossAxisCount: 2,
@@ -175,10 +194,11 @@ class HomePage extends GetView<HomeController> {
                           childAspectRatio: 0.75,
                           children: controller.recommendedProducts
                               .map((product) => _buildProductCard(
-                                    image: product['image']!,
-                                    name: product['name']!,
-                                    category: product['category']!,
-                                    price: product['price']!,
+                                      image: product.image ?? '',
+                                      name: product.name,
+                                      category: product.category,
+                                      price: 'Rp ${product.price.toStringAsFixed(0)}',
+                                      id: product.id,
                                   ))
                               .toList(),
                         )),
@@ -314,13 +334,14 @@ class HomePage extends GetView<HomeController> {
     required String name,
     required String category,
     required String price,
+    int? id,
   }) {
     return GestureDetector(
       onTap: () {
         Get.to(() => DetailPage(productData: {
+          'id': id,
               'name': name,
-              'price': int.parse(price.replaceAll(
-                  RegExp(r'[^0-9]'), '')), 
+          'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
               'image': image,
             }));
       },
@@ -343,11 +364,16 @@ class HomePage extends GetView<HomeController> {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.asset(
+              child: Image.network(
                 image,
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 120,
+                  color: Colors.grey[200],
+                  child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+                ),
               ),
             ),
             Padding(

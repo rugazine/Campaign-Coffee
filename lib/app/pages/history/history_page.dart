@@ -1,7 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:campaign_coffee/app/pages/order/controllers/order_controller.dart';
+import 'dart:async';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  late final OrderController orderController;
+  Timer? _pollingTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    orderController = Get.put(OrderController());
+    orderController.fetchOrderHistory();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      orderController.fetchOrderHistory();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
 
   String _getProductImage(String productName) {
     switch (productName.toLowerCase()) {
@@ -18,106 +45,43 @@ class HistoryPage extends StatelessWidget {
     }
   }
 
+  String _formatDateTime(String? dateTimeStr) {
+    if (dateTimeStr == null || dateTimeStr.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(dateTimeStr);
+      final date = '${dt.day.toString().padLeft(2, '0')}-${dt.month.toString().padLeft(2, '0')}-${dt.year}';
+      final time = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+      return '$date $time';
+    } catch (e) {
+      return dateTimeStr;
+    }
+  }
+
+  String getPaymentMethodLabel(String? method) {
+    switch (method) {
+      case 'qris':
+        return 'QRIS';
+      case 'gopay':
+        return 'GoPay';
+      case 'bank_transfer':
+        return 'Transfer Bank';
+      case 'shopeepay':
+        return 'ShopeePay';
+      case 'credit_card':
+        return 'Kartu Kredit';
+      case 'cstore':
+        return 'Convenience Store';
+      case 'midtrans':
+      case '':
+      case null:
+        return 'Belum dibayar';
+      default:
+        return method!.capitalizeFirst ?? method;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> historyItems = [
-      {
-        'date': '20 February 2025',
-        'time': '08:30 AM',
-        'status': 'Completed',
-        'order_id': '#ORD001',
-        'payment_method': 'Cash',
-        'items': [
-          {
-            'name': 'Matcha Latte',
-            'price': 31000,
-            'quantity': 1,
-            'size': 'Medium',
-            'ice_level': 'Normal',
-            'sugar_level': 'Less',
-          },
-        ],
-      },
-      {
-        'date': '18 February 2025',
-        'time': '14:45 PM',
-        'status': 'Completed',
-        'order_id': '#ORD002',
-        'payment_method': 'E-Wallet',
-        'items': [
-          {
-            'name': 'Taro Latte',
-            'price': 28000,
-            'quantity': 2,
-            'size': 'Large',
-            'ice_level': 'Less',
-            'sugar_level': 'Normal',
-          },
-        ],
-      },
-      {
-        'date': '15 February 2025',
-        'time': '16:20 PM',
-        'status': 'Cancelled',
-        'order_id': '#ORD003',
-        'payment_method': 'Credit Card',
-        'items': [
-          {
-            'name': 'Red Velvet',
-            'price': 33000,
-            'quantity': 1,
-            'size': 'Small',
-            'ice_level': 'Extra',
-            'sugar_level': 'Extra',
-          },
-        ],
-      },
-      {
-        'date': '10 February 2025',
-        'time': '10:15 AM',
-        'status': 'Completed',
-        'order_id': '#ORD004',
-        'payment_method': 'Cash',
-        'items': [
-          {
-            'name': 'Choco Choco',
-            'price': 27000,
-            'quantity': 3,
-            'size': 'Medium',
-            'ice_level': 'Normal',
-            'sugar_level': 'Normal',
-          },
-        ],
-      },
-      {
-        'date': '05 February 2025',
-        'time': '19:50 PM',
-        'status': 'Processing',
-        'order_id': '#ORD005',
-        'payment_method': 'E-Wallet',
-        'items': [
-          {
-            'name': 'Matcha Latte',
-            'price': 31000,
-            'quantity': 1,
-            'size': 'Large',
-            'ice_level': 'No Ice',
-            'sugar_level': 'Less',
-          },
-        ],
-      },
-    ];
-
-    // Group items by date
-    Map<String, List<Map<String, dynamic>>> groupedItems = {};
-    for (var item in historyItems) {
-      final date = item['date'] as String;
-      if (!groupedItems.containsKey(date)) {
-        groupedItems[date] = [];
-      }
-      groupedItems[date]!.add(item);
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -153,18 +117,25 @@ class HistoryPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Opacity(
-              opacity: 0.7, // Adjust opacity for better readability
+              opacity: 0.7,
               child: Image.asset(
                 'assets/images/history.png',
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          historyItems.isEmpty
-              ? Center(
+          Obx(() {
+            // Urutkan historyItems berdasarkan created_at terbaru
+            final historyItems = List<Map<String, dynamic>>.from(orderController.orderHistory)
+              ..sort((a, b) {
+                final aDate = DateTime.tryParse(a['created_at'] ?? '') ?? DateTime(2000);
+                final bDate = DateTime.tryParse(b['created_at'] ?? '') ?? DateTime(2000);
+                return bDate.compareTo(aDate);
+              });
+            if (historyItems.isEmpty) {
+              return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -184,40 +155,53 @@ class HistoryPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
-              : ListView.builder(
+              );
+            }
+            return ListView.builder(
                   itemCount: historyItems.length,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   itemBuilder: (context, index) {
                     final item = historyItems[index];
-                    final orderItem = item['items'][0];
-
-                    // Get status color based on order status
+                final orderItem = (item['items'] != null && item['items'].isNotEmpty)
+                    ? item['items'][0]
+                    : null;
+                // Status style
+                String status = (item['status'] ?? '').toString().toLowerCase();
                     Color statusColor;
                     IconData statusIcon;
-
-                    switch (item['status']) {
-                      case 'Completed':
+                switch (status) {
+                  case 'completed':
                         statusColor = Colors.green;
                         statusIcon = Icons.check_circle;
                         break;
-                      case 'Processing':
+                  case 'processing':
+                  case 'pending':
                         statusColor = Colors.orange;
                         statusIcon = Icons.pending;
                         break;
-                      case 'Cancelled':
+                  case 'cancelled':
                         statusColor = Colors.red;
                         statusIcon = Icons.cancel;
                         break;
-                      default:
+                  case 'paid':
                         statusColor = Colors.blue;
                         statusIcon = Icons.info;
-                    }
-
+                    break;
+                  case 'delivered':
+                    statusColor = Colors.blueAccent;
+                    statusIcon = Icons.local_shipping;
+                    break;
+                  default:
+                    statusColor = Colors.grey;
+                    statusIcon = Icons.info;
+                }
+                // Gambar produk
+                String imageUrl = orderItem != null ? (orderItem['product_image'] ?? '') : '';
+                if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
+                  imageUrl = 'https://campaign.rplrus.com/' + imageUrl.replaceFirst(RegExp(r'^/'), '');
+                }
                     return GestureDetector(
                       onTap: () {
-                        // Show detailed order information when tapped
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
@@ -237,12 +221,11 @@ class HistoryPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
+                                  const Text(
                                         'Order Details',
-                                        style: const TextStyle(
+                                    style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Poppins',
@@ -254,197 +237,140 @@ class HistoryPage extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  const Divider(),
+                              const SizedBox(height: 8),
+                              // Status
+                              Row(
+                                children: [
+                                  Icon(statusIcon, color: statusColor, size: 18),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    'Order ID: ${item['order_id']}',
-                                    style: const TextStyle(
+                                    (item['status'] ?? '').toString().capitalizeFirst ?? '',
+                                    style: TextStyle(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(statusIcon,
-                                          color: statusColor, size: 18),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        item['status'],
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: statusColor,
-                                          fontWeight: FontWeight.w500,
                                           fontFamily: 'Poppins',
                                         ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    'Date: ${item['date']} at ${item['time']}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Poppins',
-                                    ),
+                              // Info order
+                              Text('Order ID: #ORD${item['id']}', style: const TextStyle(fontSize: 14, fontFamily: 'Poppins')),
+                                  const SizedBox(height: 8),
+                                  // Tanggal Order
+                                  Builder(
+                                    builder: (context) {
+                                      final dateStr = item['created_at'] ?? '';
+                                      final dateTime = dateStr.isNotEmpty ? DateTime.tryParse(dateStr) : null;
+                                      final formattedDate = dateTime != null
+                                          ? '${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}'
+                                          : '-';
+                                      return Text('Date: $formattedDate', style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'));
+                                    },
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    'Payment Method: ${item['payment_method']}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Poppins',
-                                    ),
+                              Row(
+                                children: [
+                                  const Text('Tipe Pesanan: ', style: TextStyle(fontSize: 14, fontFamily: 'Poppins')),
+                                  if ((item['order_type'] ?? '').toString().isNotEmpty && item['order_type'] != '-')
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 4),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue[50],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(item['order_type'], style: const TextStyle(fontSize: 12, color: Colors.black87, fontFamily: 'Poppins')),
+                                    )
+                                  else
+                                    const Text('-', style: TextStyle(fontSize: 14, fontFamily: 'Poppins', color: Colors.grey)),
+                                ],
                                   ),
-                                  const SizedBox(height: 20),
-                                  const Text(
-                                    'Order Items',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Poppins',
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Text('Payment Method: ', style: TextStyle(fontSize: 14, fontFamily: 'Poppins')),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 4),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
+                                    child: Text(getPaymentMethodLabel(item['payment_method']), style: const TextStyle(fontSize: 12, color: Colors.black87, fontFamily: 'Poppins')),
                                   ),
+                                ],
+                              ),
+                                  const SizedBox(height: 16),
+                              const Text('Order Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
                                   const SizedBox(height: 10),
-                                  // Order items list
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: item['items'].length,
-                                    itemBuilder: (context, idx) {
-                                      final product = item['items'][idx];
-                                      return Container(
-                                        margin:
-                                            const EdgeInsets.only(bottom: 10),
+                              // List item
+                              ...((item['items'] ?? []) as List).map((orderItem) => Container(
+                                margin: const EdgeInsets.only(bottom: 10),
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
                                           color: Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                                         ),
                                         child: Row(
                                           children: [
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Image.asset(
-                                                _getProductImage(
-                                                    product['name']),
-                                                width: 60,
-                                                height: 60,
-                                                fit: BoxFit.cover,
-                                              ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: (orderItem['product_image'] != null && orderItem['product_image'].toString().isNotEmpty)
+                                        ? Image.network(
+                                            orderItem['product_image'].toString().startsWith('http')
+                                              ? orderItem['product_image']
+                                              : 'https://campaign.rplrus.com/' + orderItem['product_image'].toString().replaceFirst(RegExp(r'^/'), ''),
+                                            width: 50, height: 50, fit: BoxFit.cover)
+                                        : Image.asset(_getProductImage(orderItem['product_name'] ?? ''), width: 50, height: 50, fit: BoxFit.cover),
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    product['name'],
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontFamily: 'Poppins',
+                                          Text(orderItem['product_name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+                                          // Info detail: Temperature dan Sugar saja (tanpa Size)
+                                          Builder(
+                                            builder: (context) {
+                                              final temp = orderItem['temperature']?.toString() ?? '-';
+                                              final sugar = orderItem['sugar']?.toString() ?? '-';
+                                              return Text('Temperature: $temp • Sugar: $sugar', style: TextStyle(fontSize: 12, color: Colors.grey[700], fontFamily: 'Poppins'));
+                                            },
                                                     ),
+                                        ],
                                                   ),
-                                                  const SizedBox(height: 4),
-                                                  Text(
-                                                    'Size: ${product['size']} • Ice: ${product['ice_level']} • Sugar: ${product['sugar_level']}',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey[700],
-                                                      fontFamily: 'Poppins',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                                     children: [
-                                                      Text(
-                                                        'Rp. ${product['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}',
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontFamily: 'Poppins',
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'x${product['quantity']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily: 'Poppins',
-                                                        ),
-                                                      ),
+                                        Text('Rp. ${orderItem['price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                                        Text('x${orderItem['quantity']}', style: const TextStyle(fontSize: 12, color: Colors.grey, fontFamily: 'Poppins')),
                                                     ],
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                              )),
                                   const Spacer(),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
-                                        'Total Amount',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                      Text(
-                                        'Rp. ${(orderItem['price'] * orderItem['quantity']).toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Poppins',
-                                          color:
-                                              Color.fromARGB(255, 8, 76, 172),
-                                        ),
-                                      ),
+                                  const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
+                                  Text('Rp. ${item['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF084CAC), fontFamily: 'Poppins')),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                              const SizedBox(height: 16),
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 8, 76, 172),
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
+                                    backgroundColor: const Color(0xFF084CAC),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
                                       ),
-                                      child: const Text(
-                                        'Close',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Close', style: TextStyle(fontSize: 16, fontFamily: 'Poppins', color: Colors.white)),
                                     ),
                                   ),
                                 ],
@@ -473,7 +399,6 @@ class HistoryPage extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            // Status indicator at the top
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(
@@ -488,11 +413,10 @@ class HistoryPage extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(statusIcon,
-                                      size: 14, color: statusColor),
+                              Icon(statusIcon, size: 14, color: statusColor),
                                   const SizedBox(width: 6),
                                   Text(
-                                    item['status'],
+                                (item['status'] ?? '').toString().capitalizeFirst ?? '',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -502,7 +426,7 @@ class HistoryPage extends StatelessWidget {
                                   ),
                                   const Spacer(),
                                   Text(
-                                    item['order_id'],
+                                '#ORD${item['id']}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -513,33 +437,29 @@ class HistoryPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // Order details
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                              // Gambar produk
                                   Stack(
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
-                                        child: Image.asset(
-                                          _getProductImage(orderItem['name']),
-                                          width: 65,
-                                          height: 65,
-                                          fit: BoxFit.cover,
-                                        ),
+                                    child: imageUrl.isNotEmpty
+                                        ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                                        : Image.asset(_getProductImage(orderItem != null ? orderItem['product_name'] ?? '' : ''), width: 60, height: 60, fit: BoxFit.cover),
                                       ),
-                                      if (orderItem['quantity'] > 1)
+                                  if (orderItem != null && orderItem['quantity'] > 1)
                                         Positioned(
                                           right: 0,
                                           bottom: 0,
                                           child: Container(
                                             padding: const EdgeInsets.all(4),
                                             decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  255, 8, 76, 172),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                                          color: const Color.fromARGB(255, 8, 76, 172),
+                                          borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               'x${orderItem['quantity']}',
@@ -554,94 +474,96 @@ class HistoryPage extends StatelessWidget {
                                         ),
                                     ],
                                   ),
-                                  const SizedBox(width: 16),
+                              const SizedBox(width: 12),
+                              // Info kiri (nama, tanggal, jam, size)
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          orderItem['name'],
+                                      orderItem != null ? orderItem['product_name'] ?? '-' : '-',
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
-                                        const SizedBox(height: 4),
-                                        Row(
+                                    const SizedBox(height: 2),
+                                    // Tanggal dan jam dipisah
+                                    Builder(
+                                      builder: (context) {
+                                        String dateStr = '-';
+                                        String timeStr = '-';
+                                        if (item['created_at'] != null && item['created_at'].toString().isNotEmpty) {
+                                          try {
+                                            final dt = DateTime.parse(item['created_at']);
+                                            dateStr = '${dt.day.toString().padLeft(2, '0')} ${_monthName(dt.month)} ${dt.year}';
+                                            timeStr = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+                                          } catch (_) {}
+                                        }
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 12,
-                                                color: Colors.grey[600]),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.calendar_today, size: 13, color: Colors.grey[600]),
                                             const SizedBox(width: 4),
-                                            Text(
-                                              item['date'],
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[600],
-                                                fontFamily: 'Poppins',
-                                              ),
-                                            ),
+                                                Text(dateStr, style: TextStyle(fontSize: 12, color: Colors.grey[700], fontFamily: 'Poppins')),
                                           ],
                                         ),
-                                        const SizedBox(height: 2),
                                         Row(
                                           children: [
-                                            Icon(Icons.access_time,
-                                                size: 12,
-                                                color: Colors.grey[600]),
+                                                Icon(Icons.access_time, size: 13, color: Colors.grey[600]),
                                             const SizedBox(width: 4),
-                                            Text(
-                                              item['time'],
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[600],
-                                                fontFamily: 'Poppins',
-                                              ),
+                                                Text(timeStr, style: TextStyle(fontSize: 12, color: Colors.grey[500], fontFamily: 'Poppins')),
+                                              ],
                                             ),
                                           ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
+                                        );
+                                      },
+                                    ),
+                                    // Size
+                                    if (orderItem != null && (orderItem['size'] != null && orderItem['size'].toString().isNotEmpty))
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 2.0),
+                                        child: Text(
                                           'Size: ${orderItem['size']}',
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: Colors.grey[700],
+                                            color: Colors.grey[500],
                                             fontFamily: 'Poppins',
+                                          ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
+                              // Info kanan (harga & payment method)
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        'Rp. ${orderItem['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.")}',
+                                    'Rp. ${orderItem != null ? orderItem['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => "${m[1]}.") : '-'}',
                                         style: const TextStyle(
                                           fontSize: 16,
+                                      color: Color(0xFF084CAC),
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Poppins',
-                                          color:
-                                              Color.fromARGB(255, 8, 76, 172),
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                  if (item['payment_method'] != null && item['payment_method'].toString().isNotEmpty)
                                       Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                      margin: const EdgeInsets.only(top: 4),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                        borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text(
                                           item['payment_method'],
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.grey[800],
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black87,
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
@@ -651,11 +573,9 @@ class HistoryPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // Bottom action button
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               decoration: BoxDecoration(
                                 color: Colors.grey[50],
                                 borderRadius: const BorderRadius.only(
@@ -664,8 +584,7 @@ class HistoryPage extends StatelessWidget {
                                 ),
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Tap for details',
@@ -675,8 +594,7 @@ class HistoryPage extends StatelessWidget {
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
-                                  Icon(Icons.arrow_forward_ios,
-                                      size: 14, color: Colors.grey[600]),
+                              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[600]),
                                 ],
                               ),
                             ),
@@ -685,9 +603,19 @@ class HistoryPage extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+            );
+          }),
         ],
       ),
     );
   }
+}
+
+// Tambahkan fungsi helper bulan Indonesia
+String _monthName(int month) {
+  const months = [
+    '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  return months[month];
 }

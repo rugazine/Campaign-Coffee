@@ -183,21 +183,16 @@ class _CartPageState extends State<CartPage> {
                                           },
                                           child: GestureDetector(
                                               onTap: () {
+                                                final product = item['product'] ?? item;
                                                 Get.toNamed('/detail',
                                                     arguments: {
                                                       'productData': {
-                                                        'id': product['id'],
+                                                        'id': int.tryParse(product['id'].toString()) ?? 0,
                                                         'name': product['name'],
-                                                        'price':
-                                                            product['price'],
-                                                        'image':
-                                                            product['image'],
-                                                        'sugar':
-                                                            item['sugar'] ??
-                                                                'Normal',
-                                                        'temperature': item[
-                                                                'temperature'] ??
-                                                            'Ice'
+                                                        'price': double.tryParse((product['price'] ?? item['price'] ?? '0').toString())?.toInt() ?? 0,
+                                                        'image': product['image'],
+                                                        'sugar': item['sugar'] ?? 'Normal',
+                                                        'temperature': item['temperature'] ?? 'Ice'
                                                       }
                                                     });
                                               },

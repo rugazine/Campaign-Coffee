@@ -57,7 +57,11 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
 
         if (response.statusCode == 200) {
-          final token = data['token'];
+          // Ambil token dari data['data']['token']
+          final token = data['data']?['token'] ?? '';
+          if (token == null || token == '') {
+            throw Exception('Token tidak ditemukan di response');
+          }
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
 

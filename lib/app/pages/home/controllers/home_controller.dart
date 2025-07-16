@@ -12,11 +12,18 @@ class HomeController extends GetxController {
   final RxString error = ''.obs;
   final RxString userName = ''.obs;
 
+  // PROMO
+  final RxList<Map<String, dynamic>> promoCards = <Map<String, dynamic>>[].obs;
+  // RECOMMENDATION
+  final RxList<ProductModel> recommendedProducts = <ProductModel>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchUserName();
+    fetchPromos();
     fetchFeaturedProducts();
+    fetchRecommendedProducts();
   }
 
   Future<void> fetchUserName() async {
@@ -46,50 +53,25 @@ class HomeController extends GetxController {
   final RxList<String> categories =
       <String>['Coffee', 'Non Coffee', 'Snack', 'Main Course'].obs;
 
-  final RxList<Map<String, dynamic>> promoCards = <Map<String, dynamic>>[
-    {
-      'title': 'Buy one get\none FREE',
-      'tag': 'Promo',
-      'image': 'assets/images/banner.png'
-    },
-    {
-      'title': 'Special 50% OFF',
-      'tag': 'Promo',
-      'image': 'assets/images/banner.png'
-    },
-    {
-      'title': 'New Menu\nDiscount 25%',
-      'tag': 'Promo',
-      'image': 'assets/images/banner.png'
+  Future<void> fetchPromos() async {
+    try {
+      final response = await http.get(Uri.parse('https://campaign.rplrus.com/api/promotions'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['data'] is List) {
+          promoCards.value = List<Map<String, dynamic>>.from(
+            data['data'].map((promo) => {
+              'title': promo['title'] ?? '',
+              'tag': 'Promo',
+              'image': promo['image'] != null ? promo['image'] : 'assets/images/banner.png',
+            }),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error fetching promos: $e');
     }
-  ].obs;
-
-  final RxList<Map<String, String>> recommendedProducts = <Map<String, String>>[
-    {
-      'image': 'assets/images/choco_choco.jpg',
-      'name': 'Choco Choco',
-      'category': 'Non Coffee',
-      'price': 'Rp 15.000'
-    },
-    {
-      'image': 'assets/images/matcha_latte.jpg',
-      'name': 'Matcha Latte',
-      'category': 'Non Coffee',
-      'price': 'Rp 18.000'
-    },
-    {
-      'image': 'assets/images/red_velvet.jpg',
-      'name': 'Red Velvet',
-      'category': 'Non Coffee',
-      'price': 'Rp 20.000'
-    },
-    {
-      'image': 'assets/images/taro_latte.jpg',
-      'name': 'Taro Latte',
-      'category': 'Non Coffee',
-      'price': 'Rp 18.000'
-    }
-  ].obs;
+  }
 
   Future<void> fetchFeaturedProducts() async {
     try {
@@ -101,6 +83,16 @@ class HomeController extends GetxController {
       error.value = e.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchRecommendedProducts() async {
+    try {
+      final response = await _productService.getProducts();
+      // Ambil 4 produk teratas sebagai rekomendasi
+      recommendedProducts.value = response.take(4).toList();
+    } catch (e) {
+      print('Error fetching recommended products: $e');
     }
   }
 }

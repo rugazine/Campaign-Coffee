@@ -3,18 +3,42 @@ import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
+  const DetailPage({Key? key, this.productData}) : super(key: key);
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
   final DetailController controller = Get.put(DetailController());
 
-  DetailPage({super.key, this.productData}) {
-    if (productData != null) {
+  @override
+  void initState() {
+    super.initState();
+    Map<String, dynamic>? data = widget.productData;
+    // Jika productData null, ambil dari Get.arguments
+    if (data == null && Get.arguments != null) {
+      if (Get.arguments is Map && Get.arguments['productData'] != null) {
+        data = Map<String, dynamic>.from(Get.arguments['productData']);
+      } else if (Get.arguments is Map<String, dynamic>) {
+        data = Map<String, dynamic>.from(Get.arguments);
+      }
+    }
+    if (data != null) {
+      print('DATA DARI CART KE DETAIL: $data');
       controller.setProductData(
-        productData!['name'] ?? 'Choco Choco',
-        productData!['price'] ?? 15000,
-        productData!['image'] ?? 'assets/images/choco_choco.jpg',
-        productData!['id'] ?? 0,
+        data['name'] ?? 'Choco Choco',
+        int.tryParse(data['price'].toString()) ?? 15000,
+        (data['image'] == null || data['image'].toString().isEmpty)
+            ? 'assets/images/choco_choco.jpg'
+            : data['image'],
+        int.tryParse(data['id'].toString()) ?? 0,
       );
+      // Set sugar & temperature setelah setProductData
+      if (data['sugar'] != null) controller.setSugar(data['sugar']);
+      if (data['temperature'] != null) controller.setTemperature(data['temperature']);
     }
   }
 
@@ -152,14 +176,9 @@ class DetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'],
-                      controller.selectedSugar, controller.setSugar),
+                  Obx(() => _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'], controller.selectedSugar, controller.setSugar)),
                   const SizedBox(height: 30),
-                  _buildOptionSection(
-                      'Temperature',
-                      ['Ice', 'Hot'],
-                      controller.selectedTemperature,
-                      controller.setTemperature),
+                  Obx(() => _buildOptionSection('Temperature', ['Ice', 'Hot'], controller.selectedTemperature, controller.setTemperature)),
                   const SizedBox(height: 30),
                   const SizedBox(height: 100),
                 ],
