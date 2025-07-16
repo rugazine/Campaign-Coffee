@@ -51,7 +51,7 @@ class _DetailPageState extends State<DetailPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.off('/menu'),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
           'Detail',

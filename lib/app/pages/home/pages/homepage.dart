@@ -80,12 +80,16 @@ class HomePage extends GetView<HomeController> {
                     SizedBox(
                       height: 160,
                       child: Obx(() => controller.promoCards.isEmpty
-                          ? Center(child: Text('No promo available', style: TextStyle(color: Colors.white)))
+                          ? Center(
+                              child: Text('No promo available',
+                                  style: TextStyle(color: Colors.white)))
                           : ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.only(
+                                  left: 20, right: 20, bottom: 20),
                               itemCount: controller.promoCards.length,
-                              separatorBuilder: (_, __) => const SizedBox(width: 16),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 16),
                               itemBuilder: (context, index) {
                                 final promo = controller.promoCards[index];
                                 return Container(
@@ -94,7 +98,10 @@ class HomePage extends GetView<HomeController> {
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(20),
-                                    image: promo['image'] != null && promo['image'].toString().startsWith('http')
+                                    image: promo['image'] != null &&
+                                            promo['image']
+                                                .toString()
+                                                .startsWith('http')
                                         ? DecorationImage(
                                             image: NetworkImage(promo['image']),
                                             fit: BoxFit.cover,
@@ -104,15 +111,23 @@ class HomePage extends GetView<HomeController> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Text(promo['tag'] ?? '', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                                        Text(promo['tag'] ?? '',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold)),
                                         SizedBox(height: 4),
-                                        Text(promo['title'] ?? '', style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
+                                        Text(promo['title'] ?? '',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
                             )),
@@ -120,7 +135,6 @@ class HomePage extends GetView<HomeController> {
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
@@ -148,7 +162,6 @@ class HomePage extends GetView<HomeController> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 15),
                     Obx(() => Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -158,7 +171,6 @@ class HomePage extends GetView<HomeController> {
                                   ))
                               .toList(),
                         )),
-
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -181,27 +193,27 @@ class HomePage extends GetView<HomeController> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 15),
                     Obx(() => controller.recommendedProducts.isEmpty
                         ? Center(child: Text('No recommendation'))
                         : GridView.count(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 15,
-                          crossAxisSpacing: 15,
-                          childAspectRatio: 0.75,
-                          children: controller.recommendedProducts
-                              .map((product) => _buildProductCard(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 15,
+                            crossAxisSpacing: 15,
+                            childAspectRatio: 0.65,
+                            children: controller.recommendedProducts
+                                .map((product) => _buildProductCard(
                                       image: product.image ?? '',
                                       name: product.name,
                                       category: product.category,
-                                      price: 'Rp ${product.price.toStringAsFixed(0)}',
+                                      price:
+                                          'Rp ${product.price.toStringAsFixed(0)}',
                                       id: product.id,
-                                  ))
-                              .toList(),
-                        )),
+                                    ))
+                                .toList(),
+                          )),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -339,9 +351,9 @@ class HomePage extends GetView<HomeController> {
     return GestureDetector(
       onTap: () {
         Get.to(() => DetailPage(productData: {
-          'id': id,
+              'id': id,
               'name': name,
-          'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
+              'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
               'image': image,
             }));
       },
@@ -372,7 +384,9 @@ class HomePage extends GetView<HomeController> {
                 errorBuilder: (context, error, stackTrace) => Container(
                   height: 120,
                   color: Colors.grey[200],
-                  child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+                  child: const Center(
+                      child: Icon(Icons.broken_image,
+                          size: 40, color: Colors.grey)),
                 ),
               ),
             ),

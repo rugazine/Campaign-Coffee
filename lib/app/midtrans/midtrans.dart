@@ -3,7 +3,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class MidtransPaymentPage extends StatefulWidget {
   final String snapToken;
-  const MidtransPaymentPage({Key? key, required this.snapToken}) : super(key: key);
+  const MidtransPaymentPage({Key? key, required this.snapToken})
+      : super(key: key);
 
   @override
   State<MidtransPaymentPage> createState() => _MidtransPaymentPageState();
@@ -17,7 +18,8 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
   @override
   void initState() {
     super.initState();
-    paymentUrl = 'https://app.sandbox.midtrans.com/snap/v2/vtweb/${widget.snapToken}';
+    paymentUrl =
+        'https://app.sandbox.midtrans.com/snap/v2/vtweb/${widget.snapToken}';
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -26,7 +28,8 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             if (request.url.contains('finish')) {
               Navigator.pop(context, 'success');
               return NavigationDecision.prevent;
-            } else if (request.url.contains('unfinish') || request.url.contains('failed')) {
+            } else if (request.url.contains('unfinish') ||
+                request.url.contains('failed')) {
               Navigator.pop(context, 'failed');
               return NavigationDecision.prevent;
             }
@@ -52,6 +55,6 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Pembayaran Midtrans')),
       body: WebViewWidget(controller: _controller),
-);
-}
+    );
+  }
 }
