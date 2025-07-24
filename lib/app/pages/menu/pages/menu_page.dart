@@ -53,7 +53,7 @@ class _MenuPageState extends State<MenuPage> {
                   backgroundColor: mainBlue,
                   onPressed: () {
                     Get.offAllNamed('/bottomnav');
-                    Get.find<RxInt>().value = 1; // Set cart tab as active
+                    Get.find<RxInt>().value = 1;
                   },
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -205,6 +205,7 @@ class _MenuPageState extends State<MenuPage> {
                                 itemBuilder: (context, index) {
                                   final product =
                                       menuController.filteredProducts[index];
+                                  final bool isOutOfStock = product.stock <= 0;
 
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
@@ -213,32 +214,60 @@ class _MenuPageState extends State<MenuPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       elevation: 3,
                                       child: InkWell(
-                                        onTap: () => Get.to(
-                                            () => DetailPage(productData: {
-                                                  'id': product.id,
-                                                  'name': product.name,
-                                                  'price': product.price,
-                                                  'image': product.image,
-                                                })),
+                                        onTap: isOutOfStock
+                                            ? null
+                                            : () => Get.to(
+                                                () => DetailPage(productData: {
+                                                      'id': product.id,
+                                                      'name': product.name,
+                                                      'price': product.price,
+                                                      'image': product.image,
+                                                      'stock': product.stock,
+                                                      'description': product.description,
+                                                    })),
                                         borderRadius: BorderRadius.circular(12),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16),
                                           child: Row(
                                             children: [
-                                              Container(
-                                                width: 55,
-                                                height: 55,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(
-                                                      product.image ??
-                                                          'https://via.placeholder.com/150',
+                                              Stack(
+                                                children: [
+                                                  Container(
+                                                    width: 55,
+                                                    height: 55,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(
+                                                          product.image ??
+                                                              'https://via.placeholder.com/150',
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    fit: BoxFit.cover,
                                                   ),
-                                                ),
+                                                  if (isOutOfStock)
+                                                    Container(
+                                                      width: 55,
+                                                      height: 55,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        color: Colors.grey
+                                                            .withOpacity(0.7),
+                                                      ),
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          Icons.block,
+                                                          color: Colors.red,
+                                                          size: 20,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
@@ -248,18 +277,28 @@ class _MenuPageState extends State<MenuPage> {
                                                   children: [
                                                     Text(
                                                       product.name,
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.w600,
+                                                        color: isOutOfStock
+                                                            ? Colors.grey[500]
+                                                            : Colors.black,
                                                       ),
                                                     ),
                                                     const SizedBox(height: 4),
                                                     Text(
-                                                      product.description,
+                                                      isOutOfStock
+                                                          ? 'Stok habis'
+                                                          : product.description,
                                                       style: TextStyle(
-                                                        color: Colors.grey[600],
+                                                        color: isOutOfStock
+                                                            ? Colors.red[400]
+                                                            : Colors.grey[600],
                                                         fontSize: 10,
+                                                        fontWeight: isOutOfStock
+                                                            ? FontWeight.w500
+                                                            : FontWeight.normal,
                                                       ),
                                                       maxLines: 2,
                                                       overflow:
@@ -274,10 +313,13 @@ class _MenuPageState extends State<MenuPage> {
                                                 children: [
                                                   Text(
                                                     'Rp${product.price}',
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 16,
+                                                      color: isOutOfStock
+                                                          ? Colors.grey[500]
+                                                          : Colors.black,
                                                     ),
                                                   ),
                                                 ],

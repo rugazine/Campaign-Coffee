@@ -35,10 +35,13 @@ class _DetailPageState extends State<DetailPage> {
             ? 'assets/images/choco_choco.jpg'
             : data['image'],
         int.tryParse(data['id'].toString()) ?? 0,
+        stock: int.tryParse(data['stock'].toString()) ?? 0,
+        description: data['description'] ?? 'Deskripsi produk tidak tersedia',
       );
       // Set sugar & temperature setelah setProductData
       if (data['sugar'] != null) controller.setSugar(data['sugar']);
-      if (data['temperature'] != null) controller.setTemperature(data['temperature']);
+      if (data['temperature'] != null)
+        controller.setTemperature(data['temperature']);
     }
   }
 
@@ -89,37 +92,76 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Obx(() => Image.network(
-                              controller.productImage,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.error_outline,
-                                          color: Colors.red, size: 48),
-                                      SizedBox(height: 8),
-                                      Text('Gagal memuat gambar',
-                                          style: TextStyle(color: Colors.grey))
-                                    ],
+                        child: Obx(() => Stack(
+                              children: [
+                                Image.network(
+                                  controller.productImage,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.error_outline,
+                                              color: Colors.red, size: 48),
+                                          SizedBox(height: 8),
+                                          Text('Gagal memuat gambar',
+                                              style:
+                                                  TextStyle(color: Colors.grey))
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                if (controller.isOutOfStock)
+                                  Positioned.fill(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.grey.withOpacity(0.7),
+                                      ),
+                                      child: const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.block,
+                                              color: Colors.red,
+                                              size: 60,
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              'HABIS',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                );
-                              },
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                );
-                              },
+                              ],
                             )),
                       ),
                     ),
@@ -129,16 +171,60 @@ class _DetailPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(left: 15),
                     child: Obx(() => Text(
                           controller.productName,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: controller.isOutOfStock
+                                  ? Colors.grey
+                                  : Colors.black),
                         )),
                   ),
                   const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
-                    child: Text(
-                      'Ice/Hot',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ice/Hot',
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 4),
+                        Obx(() => Row(
+                              children: [
+                                Text(
+                                  'Stok: ${controller.stock}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: controller.isOutOfStock
+                                        ? Colors.red
+                                        : Colors.green,
+                                  ),
+                                ),
+                                if (controller.isOutOfStock) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'Habis',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            )),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -167,18 +253,28 @@ class _DetailPageState extends State<DetailPage> {
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
-                        Text(
-                          'A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk foam...',
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.grey[400]),
-                        ),
+                        Obx(() => Text(
+                              controller.description,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: controller.isOutOfStock
+                                      ? Colors.grey[300]
+                                      : Colors.grey[400]),
+                            )),
                       ],
                     ),
                   ),
                   const SizedBox(height: 30),
-                  Obx(() => _buildOptionSection('Sugar', ['Less', 'Normal', 'Extra'], controller.selectedSugar, controller.setSugar)),
+                  Obx(() => _buildOptionSection(
+                      'Sugar',
+                      ['Less', 'Normal', 'Extra'],
+                      controller.selectedSugar,
+                      controller.setSugar,
+                      isDisabled: controller.isOutOfStock)),
                   const SizedBox(height: 30),
-                  Obx(() => _buildOptionSection('Temperature', ['Ice', 'Hot'], controller.selectedTemperature, controller.setTemperature)),
+                  Obx(() => _buildOptionSection('Temperature', ['Ice', 'Hot'],
+                      controller.selectedTemperature, controller.setTemperature,
+                      isDisabled: controller.isOutOfStock)),
                   const SizedBox(height: 30),
                   const SizedBox(height: 100),
                 ],
@@ -217,35 +313,46 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                           Obx(() => Text(
                                 'Rp.${controller.price}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 8, 76, 172)),
+                                    color: controller.isOutOfStock
+                                        ? Colors.grey
+                                        : const Color.fromARGB(
+                                            255, 8, 76, 172)),
                               )),
                         ],
                       ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 70),
-                          child: ElevatedButton(
-                            onPressed: controller.addToCart,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 8, 76, 172),
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text(
-                              'Add To Cart',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                          child: Obx(() => ElevatedButton(
+                                onPressed: controller.isOutOfStock
+                                    ? null
+                                    : controller.addToCart,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: controller.isOutOfStock
+                                      ? Colors.grey[300]
+                                      : const Color.fromARGB(255, 8, 76, 172),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  controller.isOutOfStock
+                                      ? 'Stok Habis'
+                                      : 'Add To Cart',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: controller.isOutOfStock
+                                        ? Colors.grey[600]
+                                        : Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )),
                         ),
                       ),
                     ],
@@ -261,15 +368,18 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget _buildOptionSection(String title, List<String> options,
-      String selected, Function(String) onSelect) {
+      String selected, Function(String) onSelect,
+      {bool isDisabled = false}) {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDisabled ? Colors.grey : Colors.black)),
           const SizedBox(height: 20),
           Row(
             children: options.map((label) {
@@ -277,25 +387,33 @@ class _DetailPageState extends State<DetailPage> {
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: GestureDetector(
-                  onTap: () => onSelect(label),
+                  onTap: isDisabled ? null : () => onSelect(label),
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color.fromARGB(255, 8, 76, 172)
-                          : Colors.transparent,
+                      color: isDisabled
+                          ? Colors.grey[200]
+                          : isSelected
+                              ? const Color.fromARGB(255, 8, 76, 172)
+                              : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isSelected
-                            ? const Color.fromARGB(255, 8, 76, 172)
-                            : Colors.grey[300]!,
+                        color: isDisabled
+                            ? Colors.grey[300]!
+                            : isSelected
+                                ? const Color.fromARGB(255, 8, 76, 172)
+                                : Colors.grey[300]!,
                       ),
                     ),
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[600],
+                        color: isDisabled
+                            ? Colors.grey[400]
+                            : isSelected
+                                ? Colors.white
+                                : Colors.grey[600],
                         fontSize: 14,
                       ),
                     ),

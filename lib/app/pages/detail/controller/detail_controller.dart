@@ -11,6 +11,8 @@ class DetailController extends GetxController {
   final _productName = 'Choco Choco'.obs;
   final _productImage = 'assets/images/choco_choco.jpg'.obs;
   final _productId = 0.obs;
+  final _stock = 0.obs;
+  final _description = 'A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk foam...'.obs;
 
   String get selectedSugar => _selectedSugar.value;
   String get selectedTemperature => _selectedTemperature.value;
@@ -19,6 +21,9 @@ class DetailController extends GetxController {
   String get productName => _productName.value;
   String get productImage => _productImage.value;
   int get productId => _productId.value;
+  int get stock => _stock.value;
+  String get description => _description.value;
+  bool get isOutOfStock => _stock.value <= 0;
 
   void setSugar(String sugar) {
     _selectedSugar.value = sugar;
@@ -47,13 +52,16 @@ class DetailController extends GetxController {
   }
 
   void setProductData(
-      String? name, dynamic productPrice, String? image, int? id) {
+      String? name, dynamic productPrice, String? image, int? id,
+      {int? stock, String? description}) {
     _productName.value = name ?? 'Choco Choco';
     _price.value = (productPrice is double)
         ? productPrice.toInt()
         : (productPrice ?? 15000);
     _productImage.value = image ?? 'assets/images/choco_choco.jpg';
     _productId.value = id ?? 0;
+    _stock.value = stock ?? 0;
+    _description.value = description ?? 'A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk foam...';
   }
 
   Future<void> fetchProductDetail(int productId) async {
@@ -66,6 +74,8 @@ class DetailController extends GetxController {
         product.price,
         product.image,
         product.id,
+        stock: product.stock,
+        description: product.description,
       );
     } catch (e) {
       print('Error fetching product detail: $e');
@@ -83,6 +93,17 @@ class DetailController extends GetxController {
 
   Future<void> addToCart() async {
     try {
+      if (isOutOfStock) {
+        Get.snackbar(
+          'Stok Habis',
+          'Maaf, produk ini sedang tidak tersedia',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
       if (!Get.isRegistered<CartController>()) {
         Get.put(CartController());
       }

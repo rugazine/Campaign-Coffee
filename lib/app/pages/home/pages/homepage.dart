@@ -60,10 +60,10 @@ class HomePage extends GetView<HomeController> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Obx(() => Text(
                                     controller.userName.value,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 17,
                                       fontFamily: 'Poppins',
@@ -80,7 +80,7 @@ class HomePage extends GetView<HomeController> {
                     SizedBox(
                       height: 160,
                       child: Obx(() => controller.promoCards.isEmpty
-                          ? Center(
+                          ? const Center(
                               child: Text('No promo available',
                                   style: TextStyle(color: Colors.white)))
                           : ListView.separated(
@@ -116,12 +116,12 @@ class HomePage extends GetView<HomeController> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(promo['tag'] ?? '',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.blue,
                                                 fontWeight: FontWeight.bold)),
-                                        SizedBox(height: 4),
+                                        const SizedBox(height: 4),
                                         Text(promo['title'] ?? '',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold)),
@@ -176,7 +176,7 @@ class HomePage extends GetView<HomeController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Our Reccommendation',
+                          'Our Recommendation',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -195,7 +195,7 @@ class HomePage extends GetView<HomeController> {
                     ),
                     const SizedBox(height: 15),
                     Obx(() => controller.recommendedProducts.isEmpty
-                        ? Center(child: Text('No recommendation'))
+                        ? const Center(child: Text('No recommendation'))
                         : GridView.count(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
@@ -211,6 +211,8 @@ class HomePage extends GetView<HomeController> {
                                       price:
                                           'Rp ${product.price.toStringAsFixed(0)}',
                                       id: product.id,
+                                      stock: product.stock,
+                                      description: product.description,
                                     ))
                                 .toList(),
                           )),
@@ -295,10 +297,10 @@ class HomePage extends GetView<HomeController> {
     String imagePath = 'assets/images/';
     switch (label.toLowerCase()) {
       case 'coffee':
-        imagePath += 'noncoffee.svg';
+        imagePath += 'coffee.svg';
         break;
       case 'non coffee':
-        imagePath += 'coffee.svg';
+        imagePath += 'noncoffee.svg';
         break;
       case 'snack':
         imagePath += 'snack.svg';
@@ -324,7 +326,7 @@ class HomePage extends GetView<HomeController> {
               imagePath,
               width: 24,
               height: 24,
-              colorFilter: const ColorFilter.mode(mainBlue, BlendMode.srcIn),
+              color: mainBlue, // Changed from colorFilter to color
             ),
           ),
           const SizedBox(height: 4),
@@ -347,14 +349,20 @@ class HomePage extends GetView<HomeController> {
     required String category,
     required String price,
     int? id,
+    required int stock,
+    String? description,
   }) {
+    final bool isOutOfStock = stock <= 0;
+    
     return GestureDetector(
-      onTap: () {
+      onTap: isOutOfStock ? null : () {
         Get.to(() => DetailPage(productData: {
               'id': id,
               'name': name,
               'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
               'image': image,
+              'stock': stock,
+              'description': description,
             }));
       },
       child: Container(
@@ -376,18 +384,49 @@ class HomePage extends GetView<HomeController> {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                image,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 120,
-                  color: Colors.grey[200],
-                  child: const Center(
-                      child: Icon(Icons.broken_image,
-                          size: 40, color: Colors.grey)),
-                ),
+              child: Stack(
+                children: [
+                  Image.network(
+                    image,
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 120,
+                      color: Colors.grey[200],
+                      child: const Center(
+                          child: Icon(Icons.broken_image,
+                              size: 40, color: Colors.grey)),
+                    ),
+                  ),
+                  if (isOutOfStock)
+                    Container(
+                      height: 120,
+                      width: double.infinity,
+                      color: Colors.white.withOpacity(0.8),
+                      child: const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.block,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'HABIS',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(
@@ -397,18 +436,20 @@ class HomePage extends GetView<HomeController> {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       fontFamily: fontPoppins,
+                      color: isOutOfStock ? Colors.grey[500] : Colors.black,
                     ),
                   ),
                   Text(
-                    category,
+                    isOutOfStock ? 'Stok habis' : category,
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: isOutOfStock ? Colors.red[400] : Colors.grey[600],
                       fontSize: 12,
                       fontFamily: fontPoppins,
+                      fontWeight: isOutOfStock ? FontWeight.w500 : FontWeight.normal,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -417,20 +458,20 @@ class HomePage extends GetView<HomeController> {
                     children: [
                       Text(
                         price,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 8, 76, 172),
+                          color: isOutOfStock ? Colors.grey[500] : const Color.fromARGB(255, 8, 76, 172),
                           fontFamily: fontPoppins,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 8, 76, 172),
+                          color: isOutOfStock ? Colors.grey[400] : const Color.fromARGB(255, 8, 76, 172),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(
-                          Icons.add,
+                        child: Icon(
+                          isOutOfStock ? Icons.block : Icons.add,
                           color: Colors.white,
                           size: 20,
                         ),

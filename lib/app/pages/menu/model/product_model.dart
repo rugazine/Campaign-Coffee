@@ -7,6 +7,7 @@ class ProductModel {
   final double price;
   final double rating;
   final int reviewCount;
+  final int stock;
   final String? createdAt;
   final String? updatedAt;
 
@@ -19,25 +20,26 @@ class ProductModel {
     required this.price,
     required this.rating,
     required this.reviewCount,
+    required this.stock,
     this.createdAt,
     this.updatedAt,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
-  return ProductModel(
-    id: json['id'],
-    name: json['name'],
-    category: json['category'], // <-- FIX: langsung ambil string
-    description: json['description'],
-    image: json['image'],
-    price: double.parse(json['price']),
-    rating: (json['rating'] ?? 0).toDouble(),
-    reviewCount: json['review_count'] ?? 0,
-    createdAt: json['created_at'] ?? '',
-    updatedAt: json['updated_at'] ?? '',
-  );
-}
-
+    return ProductModel(
+      id: json['id'],
+      name: json['name'],
+      category: json['category'], // <-- FIX: langsung ambil string
+      description: json['description'],
+      image: json['image'],
+      price: double.parse(json['price']),
+      rating: (json['rating'] ?? 0).toDouble(),
+      reviewCount: json['review_count'] ?? 0,
+      stock: json['stock'] ?? 0,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -49,6 +51,7 @@ class ProductModel {
       'price': price.toString(),
       'rating': rating,
       'review_count': reviewCount,
+      'stock': stock,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
