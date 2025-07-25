@@ -12,6 +12,7 @@ class DetailController extends GetxController {
   final _productImage = 'assets/images/choco_choco.jpg'.obs;
   final _productId = 0.obs;
   final _stock = 0.obs;
+  final _quantity = 1.obs;
   final _description = 'A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk foam...'.obs;
 
   String get selectedSugar => _selectedSugar.value;
@@ -22,8 +23,11 @@ class DetailController extends GetxController {
   String get productImage => _productImage.value;
   int get productId => _productId.value;
   int get stock => _stock.value;
+  int get quantity => _quantity.value;
   String get description => _description.value;
   bool get isOutOfStock => _stock.value <= 0;
+  bool get isMinQuantity => _quantity.value <= 1;
+  bool get isMaxQuantity => _quantity.value >= _stock.value;
 
   void setSugar(String sugar) {
     _selectedSugar.value = sugar;
@@ -35,6 +39,18 @@ class DetailController extends GetxController {
 
   void toggleFavorite() {
     _isFavorite.value = !_isFavorite.value;
+  }
+  
+  void incrementQuantity() {
+    if (_quantity.value < _stock.value) {
+      _quantity.value++;
+    }
+  }
+  
+  void decrementQuantity() {
+    if (_quantity.value > 1) {
+      _quantity.value--;
+    }
   }
 
   final _isLoading = false.obs;
@@ -114,7 +130,7 @@ class DetailController extends GetxController {
         'product_id': _productId.value,
         'name': productName,
         'price': price, // harga produk asli
-        'quantity': 1,
+        'quantity': quantity,
         'image': productImage,
         'sugar': selectedSugar, // pilihan user
         'temperature': selectedTemperature, // pilihan user

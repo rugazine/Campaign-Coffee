@@ -324,35 +324,93 @@ class _DetailPageState extends State<DetailPage> {
                         ],
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 70),
-                          child: Obx(() => ElevatedButton(
-                                onPressed: controller.isOutOfStock
-                                    ? null
-                                    : controller.addToCart,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: controller.isOutOfStock
-                                      ? Colors.grey[300]
-                                      : const Color.fromARGB(255, 8, 76, 172),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                        child: Column(
+                          children: [
+                            // Quantity selector
+                            Obx(() => Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Minus button
+                                    IconButton(
+                                      onPressed: controller.isOutOfStock || controller.isMinQuantity
+                                          ? null
+                                          : controller.decrementQuantity,
+                                      icon: Icon(
+                                        Icons.remove_circle_outline,
+                                        color: controller.isOutOfStock || controller.isMinQuantity
+                                            ? Colors.grey[400]
+                                            : const Color.fromARGB(255, 8, 76, 172),
+                                        size: 28,
+                                      ),
+                                    ),
+                                    // Quantity display
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: controller.isOutOfStock
+                                              ? Colors.grey[300]!
+                                              : const Color.fromARGB(255, 8, 76, 172),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        '${controller.quantity}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: controller.isOutOfStock
+                                              ? Colors.grey[400]
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    // Plus button
+                                    IconButton(
+                                      onPressed: controller.isOutOfStock || controller.isMaxQuantity
+                                          ? null
+                                          : controller.incrementQuantity,
+                                      icon: Icon(
+                                        Icons.add_circle_outline,
+                                        color: controller.isOutOfStock || controller.isMaxQuantity
+                                            ? Colors.grey[400]
+                                            : const Color.fromARGB(255, 8, 76, 172),
+                                        size: 28,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                            const SizedBox(height: 10),
+                            // Add to cart button
+                            Obx(() => ElevatedButton(
+                                  onPressed: controller.isOutOfStock
+                                      ? null
+                                      : controller.addToCart,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: controller.isOutOfStock
+                                        ? Colors.grey[300]
+                                        : const Color.fromARGB(255, 8, 76, 172),
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  controller.isOutOfStock
-                                      ? 'Stok Habis'
-                                      : 'Add To Cart',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: controller.isOutOfStock
-                                        ? Colors.grey[600]
-                                        : Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                  child: Text(
+                                    controller.isOutOfStock
+                                        ? 'Stok Habis'
+                                        : 'Add To Cart',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: controller.isOutOfStock
+                                          ? Colors.grey[600]
+                                          : Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              )),
+                                )),
+                          ],
                         ),
                       ),
                     ],
