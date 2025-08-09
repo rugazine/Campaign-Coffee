@@ -34,149 +34,98 @@ class OrderController extends GetxController {
     paymentMethod.value = method;
   }
 
-  // Checkout & Payment
-  Future<String> getOrderStatus(int orderId) async {
+  Future<void> checkoutAndPay(BuildContext context) async {
+  try {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    final response = await http.get(
-      Uri.parse('https://campaign.rplrus.com/api/orders/$orderId'),
-      headers: {'Authorization': 'Bearer $token'},
+
+    final checkoutBody = {
+      'payment_method': paymentMethod.value,
+      'address': isDelivery.value ? deliveryAddressDetail.value : pickupAddressDetail.value,
+      'order_type': isDelivery.value ? 'delivery' : 'pickup',
+    };
+    print('Checkout Body: $checkoutBody');
+    final checkoutRes = await http.post(
+      Uri.parse('https://campaign.rplrus.com/api/checkout'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(checkoutBody),
     );
-    print('API GET ORDER STATUS [$orderId]: statusCode=' + response.statusCode.toString());
-    print('API GET ORDER STATUS BODY: ' + response.body.toString());
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print('API GET ORDER STATUS PARSED: ' + data.toString());
-      if (data is Map<String, dynamic> && data.containsKey('status')) {
-        return data['status'] ?? 'pending';
-      } else if (data is Map<String, dynamic> && data.containsKey('data')) {
-        return data['data']['status'] ?? 'pending';
-      }
+    final checkoutData = jsonDecode(checkoutRes.body);
+    print('Checkout Response: ${checkoutRes.statusCode}, Body: ${checkoutRes.body}');
+
+    if (checkoutRes.statusCode != 200) {
+      throw Exception('Checkout gagal: ${checkoutRes.body}');
     }
-    return 'pending';
-  }
 
-  Future<void> waitForOrderPaid(int orderId, {int maxTries = 30, int delaySeconds = 2}) async {
-    // maxTries dinaikkan, delay dipercepat
-    for (int i = 0; i < maxTries; i++) {
-      final status = await getOrderStatus(orderId);
-      print('Polling ke-${i + 1}: status order = ' + status.toString());
-      if (status == 'paid' || status == 'settlement' || status == 'completed') {
-        print('Order sudah paid/settlement/completed!');
-        return;
-      }
-      await Future.delayed(Duration(seconds: delaySeconds));
+    final data = checkoutData['data'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw Exception('Data tidak ditemukan dalam respons: ${checkoutRes.body}');
     }
-    throw Exception('Pembayaran belum selesai');
-  }
+    final midtransOrderId = data['midtrans_order_id'];
+    final snapToken = data['snap_token'];
 
-  Future<void> waitForOrderPaidWithLoading(BuildContext context, int orderId, {int maxSeconds = 120}) async {
-    // maxSeconds dinaikkan agar polling lebih lama
-    final start = DateTime.now();
-    bool isDialogOpen = false;
-    // Tampilkan loading indicator
-    Future.delayed(Duration.zero, () {
-      isDialogOpen = true;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
-    });
-    try {
-      while (DateTime.now().difference(start).inSeconds < maxSeconds) {
-        final status = await getOrderStatus(orderId);
-        print('Polling (loading) status order = ' + status.toString());
-        if (status == 'paid' || status == 'settlement' || status == 'completed') {
-          print('Order sudah paid/settlement/completed! (loading)');
-          return;
-        }
-        await Future.delayed(const Duration(seconds: 2));
-      }
-      throw Exception('Pembayaran belum selesai');
-    } finally {
-      if (isDialogOpen) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
+    if (snapToken == null || snapToken.isEmpty) {
+      throw Exception('Snap token tidak ditemukan: ${checkoutRes.body}');
     }
-  }
 
-  Future<void> checkoutAndPay(BuildContext context) async {
-    try {
-      // 1. Checkout
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    print('Checkout initiated - Midtrans Order ID: $midtransOrderId, Snap Token: $snapToken, Address: ${checkoutBody['address']}, Order Type: ${checkoutBody['order_type']}');
 
-      final checkoutBody = {
+    final checkoutDetails = {
+      'midtrans_order_id': midtransOrderId,
+      'address': checkoutBody['address'],
+      'order_type': checkoutBody['order_type'],
+    };
+
+    final result = await MidtransDialog.showPaymentDialog(context, snapToken);
+    print('Payment dialog result: $result'); // Tambahkan logging untuk memverifikasi hasil
+
+    if (result == 'success') {
+      final confirmBody = {
+        'midtrans_order_id': checkoutDetails['midtrans_order_id'],
+        'status': 'settlement',
         'payment_method': paymentMethod.value,
-        'address': isDelivery.value ? deliveryAddressDetail.value : pickupAddressDetail.value,
-        'order_type': isDelivery.value ? 'delivery' : 'pickup',
+        'address': checkoutDetails['address'],
+        'order_type': checkoutDetails['order_type'],
       };
-      print('DATA CHECKOUT DIKIRIM: ' + checkoutBody.toString());
-      final checkoutRes = await http.post(
-        Uri.parse('https://campaign.rplrus.com/api/checkout'),
+      print('Confirm Payment Body: $confirmBody'); // Tambahkan logging untuk memverifikasi body
+      final confirmRes = await http.post(
+        Uri.parse('https://campaign.rplrus.com/api/confirm-payment'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode(checkoutBody),
+        body: jsonEncode(confirmBody),
       );
-      print('CHECKOUT STATUS: ' + checkoutRes.statusCode.toString());
-      print('CHECKOUT BODY: ' + checkoutRes.body.toString());
-      final checkoutData = jsonDecode(checkoutRes.body);
-      final orderId = checkoutData['data']?['order_id'];
+      print('Confirm Payment Response: ${confirmRes.statusCode}, Body: ${confirmRes.body}');
 
-      // 2. Payment
-      final paymentBody = {'order_id': orderId};
-      print('DATA PAYMENT DIKIRIM: ' + paymentBody.toString());
-      final paymentRes = await http.post(
-        Uri.parse('https://campaign.rplrus.com/api/payment'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(paymentBody),
-      );
-      print('PAYMENT STATUS: ' + paymentRes.statusCode.toString());
-      print('PAYMENT BODY: ' + paymentRes.body.toString());
-      final paymentData = jsonDecode(paymentRes.body);
-      final snapToken = paymentData['data']?['snap_token'] ?? '';
-      if (snapToken == null || snapToken == '') {
-        throw Exception('Snap token tidak ditemukan di response: ' + paymentRes.body.toString());
-      }
-
-      // 3. Buka dialog pembayaran Midtrans
-      final result = await MidtransDialog.showPaymentDialog(context, snapToken);
-      if (result == 'success') {
-        try {
-          await waitForOrderPaidWithLoading(context, orderId); // Polling status order dengan loading
-          await cartController.clearCart();
-          // Navigasi ke halaman history di bottom nav (indeks 2)
-          Get.offAllNamed('/bottomnav');
-          // Set indeks bottom navigation ke halaman history (indeks 2)
-          Get.find<RxInt>().value = 2;
-          Get.snackbar('Sukses', 'Pesanan berhasil dibuat', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
-        } catch (_) {
-          Get.snackbar('Pembayaran belum selesai', 'Silakan tunggu beberapa saat lalu cek kembali status pesanan.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
-        }
-        return;
-      }
-      // Jika user keluar dari pembayaran (back), cek status juga
-      final status = await getOrderStatus(orderId);
-      if (status == 'paid' || status == 'settlement' || status == 'completed') {
+      if (confirmRes.statusCode == 200) {
+        final confirmData = jsonDecode(confirmRes.body);
+        final orderId = confirmData['order_id'] ?? confirmData['data']['order_id'];
         await cartController.clearCart();
-        // Navigasi ke halaman history di bottom nav (indeks 2)
         Get.offAllNamed('/bottomnav');
-        // Set indeks bottom navigation ke halaman history (indeks 2)
         Get.find<RxInt>().value = 2;
         Get.snackbar('Sukses', 'Pesanan berhasil dibuat', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
       } else {
-        Get.snackbar('Pembayaran belum selesai', 'Silakan selesaikan pembayaran untuk pesanan ini.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+        throw Exception('Konfirmasi pembayaran gagal: ${confirmRes.body}');
       }
-    } catch (e) {
-      Get.snackbar('Error', 'Terjadi kesalahan: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+    } else if (result == 'failed' || result == null) {
+      await cartController.loadCartFromPrefs();
+      Get.snackbar(
+        'Peringatan',
+        result == 'failed' ? 'Pembayaran gagal, keranjang tetap ada.' : 'Pembayaran dibatalkan, keranjang tetap ada.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: result == 'failed' ? Colors.red : Colors.yellow,
+        colorText: Colors.white,
+      );
     }
+  } catch (e) {
+    print('Checkout error: $e');
+    Get.snackbar('Error', 'Terjadi kesalahan: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
   }
+}
 
   Future<void> fetchOrderHistory() async {
     try {
@@ -204,7 +153,7 @@ class OrderController extends GetxController {
           'status': e.status,
           'order_type': e.orderType,
           'payment_method': e.paymentMethod,
-          'created_at': e.createdAt, // <-- Perbaiki di sini
+          'created_at': e.createdAt,
           'items': e.items.map((item) => {
             'id': item.id,
             'product_id': item.productId,
@@ -220,6 +169,6 @@ class OrderController extends GetxController {
       }
     } catch (e) {
       print('Error fetching order history: $e');
+    }
   }
-}
 }

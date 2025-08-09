@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderService {
-  static const String baseUrl = 'https://594319a28859.ngrok-free.app/api';
+  static const String baseUrl = 'https://campaign.rplrus.com/api';
 
   static Future<Map<String, dynamic>> checkout({
     required String paymentMethod,
