@@ -3,8 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class MidtransPaymentPage extends StatefulWidget {
   final String snapToken;
-  const MidtransPaymentPage({Key? key, required this.snapToken})
-      : super(key: key);
+  const MidtransPaymentPage({Key? key, required this.snapToken}) : super(key: key);
 
   @override
   State<MidtransPaymentPage> createState() => _MidtransPaymentPageState();
@@ -18,22 +17,33 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
   @override
   void initState() {
     super.initState();
-    paymentUrl =
-        'https://app.sandbox.midtrans.com/snap/v2/vtweb/${widget.snapToken}';
+    paymentUrl = 'https://app.sandbox.midtrans.com/snap/v2/vtweb/${widget.snapToken}';
+    print('Initializing payment with URL: $paymentUrl');
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onPageStarted: (url) {
+            print('Page loading started: $url');
+          },
+          onPageFinished: (url) {
+            print('Page loading finished: $url');
+          },
           onNavigationRequest: (NavigationRequest request) {
+            print('Navigation requested to: ${request.url}');
             if (request.url.contains('finish')) {
+              print('Payment success detected, popping with success');
               Navigator.pop(context, 'success');
               return NavigationDecision.prevent;
-            } else if (request.url.contains('unfinish') ||
-                request.url.contains('failed')) {
+            } else if (request.url.contains('unfinish') || request.url.contains('failed')) {
+              print('Payment failure detected, popping with failed');
               Navigator.pop(context, 'failed');
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
+          },
+          onWebResourceError: (error) {
+            print('WebView error: ${error.description}');
           },
         ),
       )
