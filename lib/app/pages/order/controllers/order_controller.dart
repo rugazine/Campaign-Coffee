@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:campaign_coffee/app/pages/cart/controllers/cart_controller.dart';
 import 'package:campaign_coffee/app/model/order_model.dart';
-import 'package:campaign_coffee/app/services/order_services.dart';
 import 'package:campaign_coffee/Midtrans/midtrans_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,7 +20,7 @@ class OrderController extends GetxController {
   final RxString pickupAddress = 'Campaign Coffee Shop'.obs;
   final RxString pickupAddressDetail =
       'Jl. Raya Serpong No. 8A, Serpong, Tangerang Selatan'.obs;
-  final RxString paymentMethod = 'Midtrans'.obs;
+  final RxString paymentMethod = 'E-Wallet'.obs;
   final RxString orderNote = ''.obs;
   final RxList<Map<String, dynamic>> orderHistory =
       <Map<String, dynamic>>[].obs;

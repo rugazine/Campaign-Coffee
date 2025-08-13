@@ -13,6 +13,23 @@ class _CartPageState extends State<CartPage> {
   final CartController cartController = Get.put(CartController());
 
   void _updateQuantity(int index, bool increment) {
+    final item = cartController.cartItems[index];
+    final product = item['product'] ?? item;
+    final int currentQty = int.tryParse(item['quantity'].toString()) ?? 1;
+    final int stock = int.tryParse(product['stock'].toString()) ?? 0;
+    
+    // Jika increment dan quantity sudah mencapai stock, jangan lakukan apa-apa
+    if (increment && currentQty >= stock) {
+      Get.snackbar(
+        'Stok Terbatas',
+        'Maaf, stok produk ini hanya tersedia ${stock} item',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    
     cartController.updateQuantity(index, increment);
   }
 
@@ -419,57 +436,68 @@ class _CartPageState extends State<CartPage> {
                                                                     ),
                                                                   ),
                                                                 ),
-                                                                Container(
-                                                                  height: 32,
-                                                                  width: 32,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    gradient:
-                                                                        LinearGradient(
-                                                                      begin: Alignment
-                                                                          .topLeft,
-                                                                      end: Alignment
-                                                                          .bottomRight,
-                                                                      colors: [
-                                                                        mainBlue,
-                                                                        mainBlue
-                                                                            .withOpacity(0.8),
-                                                                      ],
-                                                                    ),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10),
-                                                                    boxShadow: [
-                                                                      BoxShadow(
-                                                                        color: mainBlue
-                                                                            .withOpacity(0.3),
-                                                                        spreadRadius:
-                                                                            1,
-                                                                        blurRadius:
-                                                                            4,
-                                                                        offset: const Offset(
-                                                                            0,
-                                                                            2),
+                                                                Builder(
+                                                                  builder: (context) {
+                                                                    final int currentQty = int.tryParse(item['quantity'].toString()) ?? 1;
+                                                                    final int stock = int.tryParse(product['stock'].toString()) ?? 0;
+                                                                    final bool isMaxStock = currentQty >= stock;
+                                                                    
+                                                                    return Container(
+                                                                      height: 32,
+                                                                      width: 32,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        gradient:
+                                                                            LinearGradient(
+                                                                          begin: Alignment
+                                                                              .topLeft,
+                                                                          end: Alignment
+                                                                              .bottomRight,
+                                                                          colors: isMaxStock ? [
+                                                                            Colors.grey[400]!,
+                                                                            Colors.grey[500]!,
+                                                                          ] : [
+                                                                            mainBlue,
+                                                                            mainBlue
+                                                                                .withOpacity(0.8),
+                                                                          ],
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                                10),
+                                                                        boxShadow: isMaxStock ? [] : [
+                                                                          BoxShadow(
+                                                                            color: mainBlue
+                                                                                .withOpacity(0.3),
+                                                                            spreadRadius:
+                                                                                1,
+                                                                            blurRadius:
+                                                                                4,
+                                                                            offset: const Offset(
+                                                                                0,
+                                                                                2),
+                                                                          ),
+                                                                        ],
                                                                       ),
-                                                                    ],
-                                                                  ),
-                                                                  child:
-                                                                      IconButton(
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .zero,
-                                                                    icon: const Icon(
-                                                                        Icons
-                                                                            .add,
-                                                                        size:
-                                                                            16),
-                                                                    color: Colors
-                                                                        .white,
-                                                                    onPressed: () =>
-                                                                        _updateQuantity(
-                                                                            index,
-                                                                            true),
-                                                                  ),
+                                                                      child:
+                                                                          IconButton(
+                                                                        padding:
+                                                                            EdgeInsets
+                                                                                .zero,
+                                                                        icon: const Icon(
+                                                                            Icons
+                                                                                .add,
+                                                                            size:
+                                                                                16),
+                                                                        color: Colors
+                                                                            .white,
+                                                                        onPressed: isMaxStock ? null : () =>
+                                                                            _updateQuantity(
+                                                                                index,
+                                                                                true),
+                                                                      ),
+                                                                    );
+                                                                  }
                                                                 ),
                                                               ],
                                                             ),
