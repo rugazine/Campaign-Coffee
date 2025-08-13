@@ -1,9 +1,11 @@
 import 'package:campaign_coffee/app/pages/profile/pages/help/help_page.dart';
 import 'package:campaign_coffee/app/pages/profile/pages/settings_page.dart';
+import 'package:campaign_coffee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 
 class ProfileController extends GetxController {
@@ -136,6 +138,11 @@ class ProfileController extends GetxController {
 
   void manageAddresses() {
     Get.toNamed('/addresses');
+  }
+
+  void openStoreLocation() {
+    // Navigasi ke halaman alamat toko
+    Get.toNamed(AppRoutes.storeAddress);
   }
 
   void openHelpCenter() {

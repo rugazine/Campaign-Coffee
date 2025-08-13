@@ -12,6 +12,7 @@ import '../app/pages/profile/pages/profile_page.dart';
 import '../app/pages/order/order_page.dart';
 import '../app/pages/splash/splash_screen.dart';
 import '../app/pages/profile/pages/help/help_page.dart';
+import '../app/pages/profile/pages/store_address_page.dart';
 
 class AppRoutes {
   static const String auth = '/auth';
@@ -26,7 +27,8 @@ class AppRoutes {
   static const String order = '/order';
   static const String splash = '/splash';
   static const String help = '/help';
-    static const String cart = '/cart';
+  static const String cart = '/cart';
+  static const String storeAddress = '/store-address';
 
 
   static final routes = [
@@ -81,6 +83,10 @@ class AppRoutes {
     GetPage(
       name: cart,
       page: () => CartPage(),
+    ),
+    GetPage(
+      name: storeAddress,
+      page: () => const StoreAddressPage(),
     ),
   ];
 }

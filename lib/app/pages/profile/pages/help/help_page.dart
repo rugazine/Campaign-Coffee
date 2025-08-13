@@ -74,7 +74,7 @@ class HelpPage extends StatelessWidget {
             _buildHelpItem(
               Icons.chat_outlined,
               'WhatsApp',
-              'https://wa.me/08111167875',
+              'https://wa.me/082225556116',
             ),
             _buildHelpItem(
               Icons.camera_alt_outlined,
@@ -84,12 +84,12 @@ class HelpPage extends StatelessWidget {
             _buildHelpItem(
               Icons.email_outlined,
               'Email',
-              'mailto:help@campaign.coffee',
+              'mailto:campaigncoff@gmail.com',
             ),
             _buildHelpItem(
               Icons.phone_outlined,
               'Telepon',
-              'tel:+6281234567890',
+              'tel:+6282225556116',
             ),
             const SizedBox(height: 20),
           ],

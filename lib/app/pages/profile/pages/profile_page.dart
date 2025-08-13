@@ -154,8 +154,8 @@ class ProfilePage extends GetView<ProfileController> {
               const SizedBox(height: 8),
               _buildProfileItem(
                 Icons.location_on_outlined,
-                'Addresses',
-                controller.manageAddresses,
+                'Store Address',
+                controller.openStoreLocation,
               ),
               _buildProfileItem(
                 Icons.help_outline,
