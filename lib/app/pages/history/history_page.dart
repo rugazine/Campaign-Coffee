@@ -82,6 +82,156 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  Widget _buildOrderTracking(String status) {
+    // Define tracking stages
+    List<Map<String, dynamic>> stages = [
+      {
+        'icon': Icons.receipt_outlined,
+        'label': 'Pesanan\nDiterima',
+        'status': ['pending', 'paid', 'processing', 'completed', 'delivered']
+      },
+      {
+        'icon': Icons.coffee_maker_outlined,
+        'label': 'Sedang\nDibuat',
+        'status': ['processing', 'completed', 'delivered']
+      },
+      {
+        'icon': Icons.delivery_dining,
+        'label': 'Sedang\nDikirim',
+        'status': ['delivered']
+      },
+      {
+        'icon': Icons.home_outlined,
+        'label': 'Pesanan\nSampai',
+        'status': ['completed', 'delivered']
+      },
+    ];
+
+    String currentStatus = status.toLowerCase();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        children: [
+          // Progress line
+          Row(
+            children: List.generate(stages.length * 2 - 1, (index) {
+              if (index.isEven) {
+                // Circle for stage
+                int stageIndex = index ~/ 2;
+                Map<String, dynamic> stage = stages[stageIndex];
+                bool isActive = stage['status'].contains(currentStatus);
+                bool isCompleted = false;
+
+                // Check if this stage is completed based on current status
+                if (currentStatus == 'completed' ||
+                    currentStatus == 'delivered') {
+                  isCompleted = stageIndex < stages.length;
+                } else if (currentStatus == 'processing' && stageIndex <= 1) {
+                  isCompleted = stageIndex == 0;
+                } else if (currentStatus == 'paid' && stageIndex == 0) {
+                  isCompleted = true;
+                }
+
+                Color iconColor;
+                Color backgroundColor;
+
+                if (isCompleted) {
+                  iconColor = Colors.white;
+                  backgroundColor = Colors.green;
+                } else if (isActive) {
+                  iconColor = Colors.white;
+                  backgroundColor = const Color(0xFF084CAC);
+                } else {
+                  iconColor = Colors.grey[400]!;
+                  backgroundColor = Colors.grey[200]!;
+                }
+
+                return Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    stage['icon'],
+                    color: iconColor,
+                    size: 24,
+                  ),
+                );
+              } else {
+                // Line between stages
+                int prevStageIndex = (index - 1) ~/ 2;
+                bool isLineCompleted = false;
+
+                if (currentStatus == 'completed' ||
+                    currentStatus == 'delivered') {
+                  isLineCompleted = prevStageIndex < stages.length - 1;
+                } else if (currentStatus == 'processing') {
+                  isLineCompleted = prevStageIndex == 0;
+                }
+
+                return Expanded(
+                  child: Container(
+                    height: 3,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: isLineCompleted ? Colors.green : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                );
+              }
+            }),
+          ),
+          const SizedBox(height: 12),
+          // Labels
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: stages.asMap().entries.map((entry) {
+              int index = entry.key;
+              Map<String, dynamic> stage = entry.value;
+              bool isActive = stage['status'].contains(currentStatus);
+              bool isCompleted = false;
+
+              if (currentStatus == 'completed' ||
+                  currentStatus == 'delivered') {
+                isCompleted = index < stages.length;
+              } else if (currentStatus == 'processing' && index <= 1) {
+                isCompleted = index == 0;
+              } else if (currentStatus == 'paid' && index == 0) {
+                isCompleted = true;
+              }
+
+              return Expanded(
+                child: Text(
+                  stage['label'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontFamily: 'Poppins',
+                    color: isActive || isCompleted
+                        ? Colors.black87
+                        : Colors.grey[600],
+                    fontWeight: isActive || isCompleted
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,39 +352,33 @@ class _HistoryPageState extends State<HistoryPage> {
                     statusIcon = Icons.info;
                 }
                 // Gambar produk
-                String imageUrl =
-                    orderItem != null ? (orderItem['product_image'] ?? '') : '';
-                // Clean URL from escape characters and whitespace
-                imageUrl =
-                    imageUrl.replaceAll(RegExp(r'[\s%09%0D%0A\t\n\r]'), '');
+                String imageUrl = orderItem != null ? (orderItem['product_image'] ?? '') : '';
                 if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
-                  imageUrl = 'https://campaign.rplrus.com/' +
-                      imageUrl.replaceFirst(RegExp(r'^/'), '');
+                  imageUrl = 'https://campaign.rplrus.com/' + imageUrl.replaceFirst(RegExp(r'^/'), '');
                 }
-                return GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Container(
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            topRight: Radius.circular(25),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                    return GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => Container(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25),
+                                topRight: Radius.circular(25),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
                                   const Text(
                                     'Order Details',
                                     style: TextStyle(
@@ -347,13 +491,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                              const Text('Order Items',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins')),
-                              const SizedBox(height: 10),
+                                  const SizedBox(height: 16),
+                              const Text('Order Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
+                                  const SizedBox(height: 10),
                               // List item
                               ...((item['items'] ?? []) as List)
                                   .map((orderItem) => Container(
@@ -368,30 +508,14 @@ class _HistoryPageState extends State<HistoryPage> {
                                         child: Row(
                                           children: [
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: (orderItem['product_image'] != null &&
-                                                      orderItem['product_image']
-                                                          .toString()
-                                                          .isNotEmpty)
-                                                  ? Image.network(
-                                                      orderItem['product_image']
-                                                              .toString()
-                                                              .startsWith(
-                                                                  'http')
-                                                          ? orderItem[
-                                                              'product_image']
-                                                          : 'https://campaign.rplrus.com/' +
-                                                              orderItem['product_image']
-                                                                  .toString()
-                                                                  .replaceAll(
-                                                                      RegExp(r'[\s%09%0D%0A\t\n\r]'), '')
-                                                                  .replaceFirst(RegExp(r'^/'), ''),
-                                                      width: 50,
-                                                      height: 50,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) => Image.asset(_getProductImage(orderItem['product_name'] ?? ''), width: 50, height: 50, fit: BoxFit.cover))
-                                                  : Image.asset(_getProductImage(orderItem['product_name'] ?? ''), width: 50, height: 50, fit: BoxFit.cover),
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: (orderItem['product_image'] != null && orderItem['product_image'].toString().isNotEmpty)
+                                        ? Image.network(
+                                            orderItem['product_image'].toString().startsWith('http')
+                                              ? orderItem['product_image']
+                                              : 'https://campaign.rplrus.com/' + orderItem['product_image'].toString().replaceFirst(RegExp(r'^/'), ''),
+                                            width: 50, height: 50, fit: BoxFit.cover)
+                                        : Image.asset(_getProductImage(orderItem['product_name'] ?? ''), width: 50, height: 50, fit: BoxFit.cover),
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
@@ -399,80 +523,36 @@ class _HistoryPageState extends State<HistoryPage> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                      orderItem[
-                                                              'product_name'] ??
-                                                          '-',
-                                                      style:
-                                                          const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontFamily:
-                                                                  'Poppins')),
-                                                  // Info detail: Temperature dan Sugar saja (tanpa Size)
-                                                  Builder(
-                                                    builder: (context) {
-                                                      final temp = orderItem[
-                                                                  'temperature']
-                                                              ?.toString() ??
-                                                          '-';
-                                                      final sugar = orderItem[
-                                                                  'sugar']
-                                                              ?.toString() ??
-                                                          '-';
-                                                      return Text(
-                                                          'Temperature: $temp • Sugar: $sugar',
-                                                          style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors
-                                                                  .grey[700],
-                                                              fontFamily:
-                                                                  'Poppins'));
-                                                    },
+                                          Text(orderItem['product_name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+                                          // Info detail: Temperature dan Sugar saja (tanpa Size)
+                                          Builder(
+                                            builder: (context) {
+                                              final temp = orderItem['temperature']?.toString() ?? '-';
+                                              final sugar = orderItem['sugar']?.toString() ?? '-';
+                                              return Text('Temperature: $temp • Sugar: $sugar', style: TextStyle(fontSize: 12, color: Colors.grey[700], fontFamily: 'Poppins'));
+                                            },
+                                                    ),
+                                        ],
+                                                  ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                                    children: [
+                                        Text('Rp. ${orderItem['price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                                        Text('x${orderItem['quantity']}', style: const TextStyle(fontSize: 12, color: Colors.grey, fontFamily: 'Poppins')),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                    'Rp. ${orderItem['price']}',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily: 'Poppins')),
-                                                Text(
-                                                    'x${orderItem['quantity']}',
-                                                    style: const TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey,
-                                                        fontFamily: 'Poppins')),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      )),
-                              const Spacer(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text('Total Amount',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins')),
-                                  Text('Rp. ${item['total_price']}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Color(0xFF084CAC),
-                                          fontFamily: 'Poppins')),
-                                ],
-                              ),
+                              )),
+                                  const Spacer(),
+                                  Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                  const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
+                                  Text('Rp. ${item['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF084CAC), fontFamily: 'Poppins')),
+                                    ],
+                                  ),
                               const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
@@ -571,53 +651,32 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: imageUrl.isNotEmpty
-                                        ? Image.network(imageUrl,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) =>
-                                                Image.asset(
-                                                    _getProductImage(orderItem != null
-                                                        ? orderItem['product_name'] ??
-                                                            ''
-                                                        : ''),
-                                                    width: 60,
-                                                    height: 60,
-                                                    fit: BoxFit.cover))
-                                        : Image.asset(
-                                            _getProductImage(orderItem != null
-                                                ? orderItem['product_name'] ?? ''
-                                                : ''),
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover),
-                                  ),
-                                  if (orderItem != null &&
-                                      orderItem['quantity'] > 1)
-                                    Positioned(
-                                      right: 0,
-                                      bottom: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 8, 76, 172),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          'x${orderItem['quantity']}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Poppins',
+                                        ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                                        : Image.asset(_getProductImage(orderItem != null ? orderItem['product_name'] ?? '' : ''), width: 60, height: 60, fit: BoxFit.cover),
+                                      ),
+                                  if (orderItem != null && orderItem['quantity'] > 1)
+                                        Positioned(
+                                          right: 0,
+                                          bottom: 0,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                          color: const Color.fromARGB(255, 8, 76, 172),
+                                          borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              'x${orderItem['quantity']}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Poppins',
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                                    ],
+                                  ),
                               const SizedBox(width: 12),
                               // Info kiri (nama, tanggal, jam, size)
                               Expanded(
