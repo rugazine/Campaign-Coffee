@@ -14,22 +14,24 @@ class EditAddressDialog extends StatefulWidget {
 
 class _EditAddressDialogState extends State<EditAddressDialog> {
   static const mainBlue = Color.fromRGBO(8, 76, 172, 1);
-  late String selectedDistrict;
-  late String selectedSubDistrict;
+  final String fixedDistrict = 'Gebog';
+  final String fixedSubDistrict = 'Besito';
   late TextEditingController addressController;
+  late TextEditingController noteController;
 
   @override
   void initState() {
     super.initState();
-    selectedDistrict = 'Serpong';
-    selectedSubDistrict = 'Lengkong Karya';
     addressController = TextEditingController(
         text: widget.orderController.deliveryAddressDetail.value);
+    noteController = TextEditingController(
+        text: widget.orderController.deliveryAddressNote.value);
   }
 
   @override
   void dispose() {
     addressController.dispose();
+    noteController.dispose();
     super.dispose();
   }
 
@@ -55,186 +57,226 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Edit Address',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Edit Address',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, size: 20),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Kecamatan',
-                labelStyle: const TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Colors.grey,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: mainBlue),
-                ),
-              ),
-              value: selectedDistrict,
-              items: ['Serpong', 'Ciputat', 'Pamulang', 'Pondok Aren']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(fontFamily: 'Poppins'),
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedDistrict = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Kelurahan',
-                labelStyle: const TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Colors.grey,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: mainBlue),
-                ),
-              ),
-              value: selectedSubDistrict,
-              items: [
-                'Lengkong Karya',
-                'Lengkong Wetan',
-                'Lengkong Gudang',
-                'Rawa Mekar'
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(fontFamily: 'Poppins'),
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedSubDistrict = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: addressController,
-              decoration: InputDecoration(
-                labelText: 'Alamat Lengkap',
-                labelStyle: const TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Colors.grey,
-                ),
-                hintText: 'Nama jalan, gang, nomor rumah',
-                hintStyle: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Colors.grey.shade400,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: mainBlue),
-                ),
-              ),
-              style: const TextStyle(fontFamily: 'Poppins'),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
+                  IconButton(
                     onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    icon: const Icon(Icons.close, size: 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Disclaimer untuk area delivery
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        color: Colors.orange[700], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Delivery hanya tersedia untuk daerah Besito saja',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          color: Colors.orange[700],
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      'Batal',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.grey,
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Kecamatan',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: mainBlue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                controller: TextEditingController(text: fixedDistrict),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Desa',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: mainBlue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                controller: TextEditingController(text: fixedSubDistrict),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: addressController,
+                decoration: InputDecoration(
+                  labelText: 'Alamat Lengkap',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                  ),
+                  hintText: 'Nama jalan, gang, nomor rumah',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey.shade400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: mainBlue),
+                  ),
+                ),
+                style: const TextStyle(fontFamily: 'Poppins'),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: noteController,
+                decoration: InputDecoration(
+                  labelText: 'Catatan Alamat (Opsional)',
+                  labelStyle: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                  ),
+                  hintText: 'Patokan, warna rumah, dll',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey.shade400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: mainBlue),
+                  ),
+                ),
+                style: const TextStyle(fontFamily: 'Poppins'),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Batal',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      widget.orderController.updateDeliveryAddress(
-                        '$selectedDistrict, $selectedSubDistrict',
-                        addressController.text,
-                      );
-                      // TODO: Integrasi ke API jika ingin update address user di backend
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: mainBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        widget.orderController.updateDeliveryAddress(
+                          '$fixedDistrict, $fixedSubDistrict',
+                          addressController.text,
+                          noteController.text,
+                        );
+                        // TODO: Integrasi ke API jika ingin update address user di backend
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: mainBlue,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Simpan',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
+                      child: const Text(
+                        'Simpan',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

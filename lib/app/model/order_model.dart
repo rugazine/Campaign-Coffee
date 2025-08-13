@@ -4,6 +4,8 @@ class OrderModel {
   final String status;
   final String orderType;
   final String? address;
+  final String? addressNote;
+  final String? orderNote;
   final List<OrderItemModel> items;
   final String paymentMethod;
   final String? createdAt;
@@ -14,6 +16,8 @@ class OrderModel {
     required this.status,
     required this.orderType,
     this.address,
+    this.addressNote,
+    this.orderNote,
     required this.items,
     required this.paymentMethod,
     this.createdAt,
@@ -26,6 +30,8 @@ class OrderModel {
       status: json['status'] ?? '',
       orderType: json['order_type'] ?? '',
       address: json['address'],
+      addressNote: json['address_note'],
+      orderNote: json['order_note'],
       items: (json['items'] as List)
           .map((item) => OrderItemModel.fromJson(item))
           .toList(),

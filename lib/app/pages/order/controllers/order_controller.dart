@@ -17,10 +17,12 @@ class OrderController extends GetxController {
   final RxString deliveryAddress = 'Jl. Kpg Sutoyo'.obs;
   final RxString deliveryAddressDetail =
       'Kpg. Sutoyo No. 620, Bilzen, Tanjungbalai'.obs;
+  final RxString deliveryAddressNote = ''.obs;
   final RxString pickupAddress = 'Campaign Coffee Shop'.obs;
   final RxString pickupAddressDetail =
       'Jl. Raya Serpong No. 8A, Serpong, Tangerang Selatan'.obs;
   final RxString paymentMethod = 'Midtrans'.obs;
+  final RxString orderNote = ''.obs;
   final RxList<Map<String, dynamic>> orderHistory =
       <Map<String, dynamic>>[].obs;
 
@@ -28,9 +30,20 @@ class OrderController extends GetxController {
     isDelivery.value = isDeliverySelected;
   }
 
-  void updateDeliveryAddress(String address, String detail) {
+  void updateDeliveryAddress(String address, String detail, [String? note]) {
     deliveryAddress.value = address;
     deliveryAddressDetail.value = detail;
+    if (note != null) {
+      deliveryAddressNote.value = note;
+    }
+  }
+
+  void updateDeliveryAddressNote(String note) {
+    deliveryAddressNote.value = note;
+  }
+
+  void updateOrderNote(String note) {
+    orderNote.value = note;
   }
 
   void updatePaymentMethod(String method) {
@@ -44,8 +57,12 @@ class OrderController extends GetxController {
 
       final checkoutBody = {
         'payment_method': paymentMethod.value,
-        'address': isDelivery.value ? deliveryAddressDetail.value : pickupAddressDetail.value,
+        'address': isDelivery.value
+            ? deliveryAddressDetail.value
+            : pickupAddressDetail.value,
         'order_type': isDelivery.value ? 'delivery' : 'pickup',
+        'address_note': deliveryAddressNote.value,
+        'order_note': orderNote.value,
       };
       print('Checkout Body: $checkoutBody');
       final checkoutRes = await http.post(
@@ -57,7 +74,8 @@ class OrderController extends GetxController {
         body: jsonEncode(checkoutBody),
       );
       final checkoutData = jsonDecode(checkoutRes.body);
-      print('Checkout Response: ${checkoutRes.statusCode}, Body: ${checkoutRes.body}');
+      print(
+          'Checkout Response: ${checkoutRes.statusCode}, Body: ${checkoutRes.body}');
 
       if (checkoutRes.statusCode != 200) {
         throw Exception('Checkout gagal: ${checkoutRes.body}');
@@ -65,7 +83,8 @@ class OrderController extends GetxController {
 
       final data = checkoutData['data'] as Map<String, dynamic>?;
       if (data == null) {
-        throw Exception('Data tidak ditemukan dalam respons: ${checkoutRes.body}');
+        throw Exception(
+            'Data tidak ditemukan dalam respons: ${checkoutRes.body}');
       }
       final midtransOrderId = data['midtrans_order_id'];
       final snapToken = data['snap_token'];
@@ -74,16 +93,20 @@ class OrderController extends GetxController {
         throw Exception('Snap token tidak ditemukan: ${checkoutRes.body}');
       }
 
-      print('Checkout initiated - Midtrans Order ID: $midtransOrderId, Snap Token: $snapToken, Address: ${checkoutBody['address']}, Order Type: ${checkoutBody['order_type']}');
+      print(
+          'Checkout initiated - Midtrans Order ID: $midtransOrderId, Snap Token: $snapToken, Address: ${checkoutBody['address']}, Order Type: ${checkoutBody['order_type']}');
 
-    final checkoutDetails = {
-      'midtrans_order_id': midtransOrderId,
-      'address': checkoutBody['address'],
-      'order_type': checkoutBody['order_type'],
-    };
+      final checkoutDetails = {
+        'midtrans_order_id': midtransOrderId,
+        'address': checkoutBody['address'],
+        'order_type': checkoutBody['order_type'],
+        'address_note': checkoutBody['address_note'],
+        'order_note': checkoutBody['order_note'],
+      };
 
       final result = await MidtransDialog.showPaymentDialog(context, snapToken);
-      print('Payment dialog result: $result'); // Tambahkan logging untuk memverifikasi hasil
+      print(
+          'Payment dialog result: $result'); // Tambahkan logging untuk memverifikasi hasil
 
       if (result == 'success') {
         final confirmBody = {
@@ -92,8 +115,11 @@ class OrderController extends GetxController {
           'payment_method': paymentMethod.value,
           'address': checkoutDetails['address'],
           'order_type': checkoutDetails['order_type'],
+          'address_note': checkoutDetails['address_note'],
+          'order_note': checkoutDetails['order_note'],
         };
-        print('Confirm Payment Body: $confirmBody'); // Tambahkan logging untuk memverifikasi body
+        print(
+            'Confirm Payment Body: $confirmBody'); // Tambahkan logging untuk memverifikasi body
         final confirmRes = await http.post(
           Uri.parse('https://campaign.rplrus.com/api/confirm-payment'),
           headers: {
@@ -102,11 +128,13 @@ class OrderController extends GetxController {
           },
           body: jsonEncode(confirmBody),
         );
-        print('Confirm Payment Response: ${confirmRes.statusCode}, Body: ${confirmRes.body}');
+        print(
+            'Confirm Payment Response: ${confirmRes.statusCode}, Body: ${confirmRes.body}');
 
         if (confirmRes.statusCode == 200) {
           final confirmData = jsonDecode(confirmRes.body);
-          final orderId = confirmData['order_id'] ?? confirmData['data']['order_id'];
+          final orderId =
+              confirmData['order_id'] ?? confirmData['data']['order_id'];
           await cartController.clearCart();
 
           // Show success popup
@@ -161,7 +189,8 @@ class OrderController extends GetxController {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                     ),
                     child: Text(
                       'OK',
@@ -183,7 +212,8 @@ class OrderController extends GetxController {
         // User closed the dialog, check payment status from server
         try {
           final statusRes = await http.get(
-            Uri.parse('https://campaign.rplrus.com/api/check-payment-status/${checkoutDetails['midtrans_order_id']}'),
+            Uri.parse(
+                'https://campaign.rplrus.com/api/check-payment-status/${checkoutDetails['midtrans_order_id']}'),
             headers: {
               'Authorization': 'Bearer $token',
               'Content-Type': 'application/json',
@@ -192,9 +222,12 @@ class OrderController extends GetxController {
 
           if (statusRes.statusCode == 200) {
             final statusData = jsonDecode(statusRes.body);
-            final paymentStatus = statusData['status'] ?? statusData['data']?['status'];
+            final paymentStatus =
+                statusData['status'] ?? statusData['data']?['status'];
 
-            if (paymentStatus == 'settlement' || paymentStatus == 'capture' || paymentStatus == 'success') {
+            if (paymentStatus == 'settlement' ||
+                paymentStatus == 'capture' ||
+                paymentStatus == 'success') {
               // Payment was successful, confirm the order
               final confirmBody = {
                 'midtrans_order_id': checkoutDetails['midtrans_order_id'],
@@ -268,7 +301,8 @@ class OrderController extends GetxController {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 12),
                           ),
                           child: Text(
                             'OK',
@@ -312,7 +346,9 @@ class OrderController extends GetxController {
         await cartController.loadCartFromPrefs();
         Get.snackbar(
           'Peringatan',
-          result == 'failed' ? 'Pembayaran gagal, keranjang tetap ada.' : 'Pembayaran dibatalkan, keranjang tetap ada.',
+          result == 'failed'
+              ? 'Pembayaran gagal, keranjang tetap ada.'
+              : 'Pembayaran dibatalkan, keranjang tetap ada.',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: result == 'failed' ? Colors.red : Colors.yellow,
           colorText: Colors.white,
@@ -320,7 +356,10 @@ class OrderController extends GetxController {
       }
     } catch (e) {
       print('Checkout error: $e');
-      Get.snackbar('Error', 'Terjadi kesalahan: $e', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('Error', 'Terjadi kesalahan: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
     }
   }
 
@@ -347,25 +386,31 @@ class OrderController extends GetxController {
               .map((e) => OrderModel.fromJson(e))
               .toList();
         }
-        orderHistory.value = orders.map((e) => {
-          'id': e.id,
-          'total_price': e.totalPrice,
-          'status': e.status,
-          'order_type': e.orderType,
-          'payment_method': e.paymentMethod,
-          'created_at': e.createdAt,
-          'items': e.items.map((item) => {
-            'id': item.id,
-            'product_id': item.productId,
-            'product_name': item.productName,
-            'product_image': item.productImage,
-            'price': item.price,
-            'quantity': item.quantity,
-            'size': item.size,
-            'sugar': item.sugar,
-            'temperature': item.temperature,
-          }).toList(),
-        }).toList();
+        orderHistory.value = orders
+            .map((e) => {
+                  'id': e.id,
+                  'total_price': e.totalPrice,
+                  'status': e.status,
+                  'order_type': e.orderType,
+                  'payment_method': e.paymentMethod,
+                  'created_at': e.createdAt,
+                  'address_note': e.addressNote,
+                  'order_note': e.orderNote,
+                  'items': e.items
+                      .map((item) => {
+                            'id': item.id,
+                            'product_id': item.productId,
+                            'product_name': item.productName,
+                            'product_image': item.productImage,
+                            'price': item.price,
+                            'quantity': item.quantity,
+                            'size': item.size,
+                            'sugar': item.sugar,
+                            'temperature': item.temperature,
+                          })
+                      .toList(),
+                })
+            .toList();
       }
     } catch (e) {
       print('Error fetching order history: $e');

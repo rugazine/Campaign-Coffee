@@ -401,6 +401,49 @@ class _OrderPageState extends State<OrderPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              const Text(
+                'Order Note',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                onChanged: (value) => orderController.updateOrderNote(value),
+                decoration: InputDecoration(
+                  hintText: 'Tambahkan catatan untuk pesanan (opsional)',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey.shade400,
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: mainBlue),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                ),
+                maxLines: 3,
+                minLines: 1,
+              ),
             ],
           ),
         ),

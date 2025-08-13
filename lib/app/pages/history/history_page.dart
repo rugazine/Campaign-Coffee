@@ -387,290 +387,391 @@ class _HistoryPageState extends State<HistoryPage> {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Order Details',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Status
-                              Row(
-                                children: [
-                                  Icon(statusIcon,
-                                      color: statusColor, size: 18),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    (item['status'] ?? '')
-                                            .toString()
-                                            .capitalizeFirst ??
-                                        '',
-                                    style: TextStyle(
-                                      color: statusColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Info order
-                              Text('Order ID: #ORD${item['id']}',
-                                  style: const TextStyle(
-                                      fontSize: 14, fontFamily: 'Poppins')),
-                              const SizedBox(height: 8),
-                              // Tanggal Order
-                              Builder(
-                                builder: (context) {
-                                  final dateStr = item['created_at'] ?? '';
-                                  final dateTime = dateStr.isNotEmpty
-                                      ? DateTime.tryParse(dateStr)
-                                      : null;
-                                  final formattedDate = dateTime != null
-                                      ? '${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}'
-                                      : '-';
-                                  return Text('Date: $formattedDate',
-                                      style: const TextStyle(
-                                          fontSize: 14, fontFamily: 'Poppins'));
-                                },
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  const Text('Tipe Pesanan: ',
-                                      style: TextStyle(
-                                          fontSize: 14, fontFamily: 'Poppins')),
-                                  if ((item['order_type'] ?? '')
-                                          .toString()
-                                          .isNotEmpty &&
-                                      item['order_type'] != '-')
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 4),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue[50],
-                                        borderRadius: BorderRadius.circular(8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Order Details',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                          ),
+                                        ],
                                       ),
-                                      child: Text(item['order_type'],
+                                      const SizedBox(height: 8),
+                                      // Status
+                                      Row(
+                                        children: [
+                                          Icon(statusIcon,
+                                              color: statusColor, size: 18),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            (item['status'] ?? '')
+                                                    .toString()
+                                                    .capitalizeFirst ??
+                                                '',
+                                            style: TextStyle(
+                                              color: statusColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Info order
+                                      Text('Order ID: #ORD${item['id']}',
                                           style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black87,
+                                              fontSize: 14,
                                               fontFamily: 'Poppins')),
-                                    )
-                                  else
-                                    const Text('-',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily: 'Poppins',
-                                            color: Colors.grey)),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  const Text('Payment Method: ',
-                                      style: TextStyle(
-                                          fontSize: 14, fontFamily: 'Poppins')),
-                                  Container(
-                                    margin: const EdgeInsets.only(left: 4),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                        getPaymentMethodLabel(
-                                            item['payment_method']),
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black87,
-                                            fontFamily: 'Poppins')),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Order Tracking Section
-                              const Text('Order Tracking',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins')),
-                              const SizedBox(height: 12),
-                              _buildOrderTracking(item['status'] ?? ''),
-                              const SizedBox(height: 16),
-                              const Text('Order Items',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins')),
-                              const SizedBox(height: 10),
-                              // List item
-                              ...((item['items'] ?? []) as List)
-                                  .map((orderItem) => Container(
-                                        margin:
-                                            const EdgeInsets.only(bottom: 10),
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            ClipRRect(
+                                      const SizedBox(height: 8),
+                                      // Tanggal Order
+                                      Builder(
+                                        builder: (context) {
+                                          final dateStr =
+                                              item['created_at'] ?? '';
+                                          final dateTime = dateStr.isNotEmpty
+                                              ? DateTime.tryParse(dateStr)
+                                              : null;
+                                          final formattedDate = dateTime != null
+                                              ? '${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}'
+                                              : '-';
+                                          return Text('Date: $formattedDate',
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily: 'Poppins'));
+                                        },
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Text('Tipe Pesanan: ',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily: 'Poppins')),
+                                          if ((item['order_type'] ?? '')
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              item['order_type'] != '-')
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 4),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(item['order_type'],
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black87,
+                                                      fontFamily: 'Poppins')),
+                                            )
+                                          else
+                                            const Text('-',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontFamily: 'Poppins',
+                                                    color: Colors.grey)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Text('Payment Method: ',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily: 'Poppins')),
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[200],
                                               borderRadius:
                                                   BorderRadius.circular(8),
-                                              child: (orderItem[
-                                                              'product_image'] !=
-                                                          null &&
-                                                      orderItem['product_image']
-                                                          .toString()
-                                                          .isNotEmpty)
-                                                  ? Builder(
-                                                      builder: (context) {
-                                                        String imgUrl = orderItem[
-                                                                'product_image']
-                                                            .toString();
-                                                        if (!imgUrl.startsWith(
-                                                            'http')) {
-                                                          // Clean the URL by removing control characters and whitespace
-                                                          imgUrl = imgUrl
-                                                              .replaceAll(
-                                                                  RegExp(
-                                                                      r'[\x00-\x1F\x7F-\x9F]'),
-                                                                  '')
-                                                              .trim();
-                                                          if (imgUrl
-                                                              .isNotEmpty) {
-                                                            imgUrl = 'https://campaign.rplrus.com/' +
-                                                                imgUrl.replaceFirst(
-                                                                    RegExp(
-                                                                        r'^/'),
-                                                                    '');
-                                                          }
-                                                        }
-                                                        return imgUrl.isNotEmpty
-                                                            ? Image.network(
-                                                                imgUrl,
-                                                                width: 50,
-                                                                height: 50,
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                errorBuilder:
-                                                                    (context,
-                                                                        error,
-                                                                        stackTrace) {
-                                                                  return Image
-                                                                      .asset(
-                                                                    _getProductImage(
-                                                                        orderItem['product_name'] ??
-                                                                            ''),
-                                                                    width: 50,
-                                                                    height: 50,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  );
-                                                                },
-                                                              )
-                                                            : Image.asset(
-                                                                _getProductImage(
-                                                                    orderItem[
-                                                                            'product_name'] ??
-                                                                        ''),
-                                                                width: 50,
-                                                                height: 50,
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              );
-                                                      },
-                                                    )
-                                                  : Image.asset(
-                                                      _getProductImage(orderItem[
-                                                              'product_name'] ??
-                                                          ''),
-                                                      width: 50,
-                                                      height: 50,
-                                                      fit: BoxFit.cover),
                                             ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      orderItem[
-                                                              'product_name'] ??
-                                                          '-',
-                                                      style:
-                                                          const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontFamily:
-                                                                  'Poppins')),
-                                                  // Info detail: Temperature dan Sugar saja (tanpa Size)
-                                                  Builder(
-                                                    builder: (context) {
-                                                      final temp = orderItem[
-                                                                  'temperature']
-                                                              ?.toString() ??
-                                                          '-';
-                                                      final sugar = orderItem[
-                                                                  'sugar']
-                                                              ?.toString() ??
-                                                          '-';
-                                                      return Text(
-                                                          'Temperature: $temp • Sugar: $sugar',
-                                                          style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors
-                                                                  .grey[700],
-                                                              fontFamily:
-                                                                  'Poppins'));
-                                                    },
-                                                  ),
-                                                ],
+                                            child: Text(
+                                                getPaymentMethodLabel(
+                                                    item['payment_method']),
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black87,
+                                                    fontFamily: 'Poppins')),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      // Address Note Section
+                                      if (item['address_note'] != null &&
+                                          item['address_note']
+                                              .toString()
+                                              .isNotEmpty)
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text('Catatan Alamat:',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    fontFamily: 'Poppins')),
+                                            const SizedBox(height: 4),
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Colors.blue[200]!),
                                               ),
+                                              child: Text(
+                                                  item['address_note']
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: 'Poppins')),
                                             ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                    'Rp. ${orderItem['price']}',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily: 'Poppins')),
-                                                Text(
-                                                    'x${orderItem['quantity']}',
-                                                    style: const TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey,
-                                                        fontFamily: 'Poppins')),
-                                              ],
-                                            ),
+                                            const SizedBox(height: 12),
                                           ],
                                         ),
-                                      )),
+                                      // Order Note Section
+                                      if (item['order_note'] != null &&
+                                          item['order_note']
+                                              .toString()
+                                              .isNotEmpty)
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text('Catatan Pesanan:',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    fontFamily: 'Poppins')),
+                                            const SizedBox(height: 4),
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Colors.green[200]!),
+                                              ),
+                                              child: Text(
+                                                  item['order_note'].toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: 'Poppins')),
+                                            ),
+                                            const SizedBox(height: 16),
+                                          ],
+                                        ),
+                                      // Order Tracking Section
+                                      const Text('Order Tracking',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              fontFamily: 'Poppins')),
+                                      const SizedBox(height: 12),
+                                      _buildOrderTracking(item['status'] ?? ''),
+                                      const SizedBox(height: 16),
+                                      const Text('Order Items',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              fontFamily: 'Poppins')),
+                                      const SizedBox(height: 10),
+                                      // List item
+                                      ...((item['items'] ?? []) as List)
+                                          .map((orderItem) => Container(
+                                                margin: const EdgeInsets.only(
+                                                    bottom: 10),
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[100],
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      child: (orderItem[
+                                                                      'product_image'] !=
+                                                                  null &&
+                                                              orderItem[
+                                                                      'product_image']
+                                                                  .toString()
+                                                                  .isNotEmpty)
+                                                          ? Builder(
+                                                              builder:
+                                                                  (context) {
+                                                                String imgUrl =
+                                                                    orderItem[
+                                                                            'product_image']
+                                                                        .toString();
+                                                                if (!imgUrl
+                                                                    .startsWith(
+                                                                        'http')) {
+                                                                  // Clean the URL by removing control characters and whitespace
+                                                                  imgUrl = imgUrl
+                                                                      .replaceAll(
+                                                                          RegExp(
+                                                                              r'[\x00-\x1F\x7F-\x9F]'),
+                                                                          '')
+                                                                      .trim();
+                                                                  if (imgUrl
+                                                                      .isNotEmpty) {
+                                                                    imgUrl = 'https://campaign.rplrus.com/' +
+                                                                        imgUrl.replaceFirst(
+                                                                            RegExp(r'^/'),
+                                                                            '');
+                                                                  }
+                                                                }
+                                                                return imgUrl
+                                                                        .isNotEmpty
+                                                                    ? Image
+                                                                        .network(
+                                                                        imgUrl,
+                                                                        width:
+                                                                            50,
+                                                                        height:
+                                                                            50,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        errorBuilder: (context,
+                                                                            error,
+                                                                            stackTrace) {
+                                                                          return Image
+                                                                              .asset(
+                                                                            _getProductImage(orderItem['product_name'] ??
+                                                                                ''),
+                                                                            width:
+                                                                                50,
+                                                                            height:
+                                                                                50,
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image
+                                                                        .asset(
+                                                                        _getProductImage(orderItem['product_name'] ??
+                                                                            ''),
+                                                                        width:
+                                                                            50,
+                                                                        height:
+                                                                            50,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      );
+                                                              },
+                                                            )
+                                                          : Image.asset(
+                                                              _getProductImage(
+                                                                  orderItem[
+                                                                          'product_name'] ??
+                                                                      ''),
+                                                              width: 50,
+                                                              height: 50,
+                                                              fit:
+                                                                  BoxFit.cover),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                              orderItem[
+                                                                      'product_name'] ??
+                                                                  '-',
+                                                              style: const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  fontFamily:
+                                                                      'Poppins')),
+                                                          // Info detail: Temperature dan Sugar saja (tanpa Size)
+                                                          Builder(
+                                                            builder: (context) {
+                                                              final temp = orderItem[
+                                                                          'temperature']
+                                                                      ?.toString() ??
+                                                                  '-';
+                                                              final sugar =
+                                                                  orderItem['sugar']
+                                                                          ?.toString() ??
+                                                                      '-';
+                                                              return Text(
+                                                                  'Temperature: $temp • Sugar: $sugar',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          700],
+                                                                      fontFamily:
+                                                                          'Poppins'));
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        Text(
+                                                            'Rp. ${orderItem['price']}',
+                                                            style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontFamily:
+                                                                    'Poppins')),
+                                                        Text(
+                                                            'x${orderItem['quantity']}',
+                                                            style: const TextStyle(
+                                                                fontSize: 12,
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontFamily:
+                                                                    'Poppins')),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              )),
                                     ],
                                   ),
                                 ),
