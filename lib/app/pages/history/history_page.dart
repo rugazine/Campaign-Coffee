@@ -352,33 +352,47 @@ class _HistoryPageState extends State<HistoryPage> {
                     statusIcon = Icons.info;
                 }
                 // Gambar produk
-                String imageUrl = orderItem != null ? (orderItem['product_image'] ?? '') : '';
+                String imageUrl =
+                    orderItem != null ? (orderItem['product_image'] ?? '') : '';
                 if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
-                  imageUrl = 'https://campaign.rplrus.com/' + imageUrl.replaceFirst(RegExp(r'^/'), '');
+                  // Clean the URL by removing control characters and whitespace
+                  imageUrl = imageUrl
+                      .replaceAll(RegExp(r'[\x00-\x1F\x7F-\x9F]'), '')
+                      .trim();
+                  if (imageUrl.isNotEmpty) {
+                    imageUrl = 'https://campaign.rplrus.com/' +
+                        imageUrl.replaceFirst(RegExp(r'^/'), '');
+                  }
                 }
-                    return GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => Container(
-                            height: MediaQuery.of(context).size.height * 0.7,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25),
-                                topRight: Radius.circular(25),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                return GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => Container(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25),
+                            topRight: Radius.circular(25),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
                                   const Text(
                                     'Order Details',
                                     style: TextStyle(
@@ -491,9 +505,22 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ),
                                 ],
                               ),
-                                  const SizedBox(height: 16),
-                              const Text('Order Items', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
-                                  const SizedBox(height: 10),
+                              const SizedBox(height: 16),
+                              // Order Tracking Section
+                              const Text('Order Tracking',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'Poppins')),
+                              const SizedBox(height: 12),
+                              _buildOrderTracking(item['status'] ?? ''),
+                              const SizedBox(height: 16),
+                              const Text('Order Items',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'Poppins')),
+                              const SizedBox(height: 10),
                               // List item
                               ...((item['items'] ?? []) as List)
                                   .map((orderItem) => Container(
@@ -508,14 +535,79 @@ class _HistoryPageState extends State<HistoryPage> {
                                         child: Row(
                                           children: [
                                             ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: (orderItem['product_image'] != null && orderItem['product_image'].toString().isNotEmpty)
-                                        ? Image.network(
-                                            orderItem['product_image'].toString().startsWith('http')
-                                              ? orderItem['product_image']
-                                              : 'https://campaign.rplrus.com/' + orderItem['product_image'].toString().replaceFirst(RegExp(r'^/'), ''),
-                                            width: 50, height: 50, fit: BoxFit.cover)
-                                        : Image.asset(_getProductImage(orderItem['product_name'] ?? ''), width: 50, height: 50, fit: BoxFit.cover),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: (orderItem[
+                                                              'product_image'] !=
+                                                          null &&
+                                                      orderItem['product_image']
+                                                          .toString()
+                                                          .isNotEmpty)
+                                                  ? Builder(
+                                                      builder: (context) {
+                                                        String imgUrl = orderItem[
+                                                                'product_image']
+                                                            .toString();
+                                                        if (!imgUrl.startsWith(
+                                                            'http')) {
+                                                          // Clean the URL by removing control characters and whitespace
+                                                          imgUrl = imgUrl
+                                                              .replaceAll(
+                                                                  RegExp(
+                                                                      r'[\x00-\x1F\x7F-\x9F]'),
+                                                                  '')
+                                                              .trim();
+                                                          if (imgUrl
+                                                              .isNotEmpty) {
+                                                            imgUrl = 'https://campaign.rplrus.com/' +
+                                                                imgUrl.replaceFirst(
+                                                                    RegExp(
+                                                                        r'^/'),
+                                                                    '');
+                                                          }
+                                                        }
+                                                        return imgUrl.isNotEmpty
+                                                            ? Image.network(
+                                                                imgUrl,
+                                                                width: 50,
+                                                                height: 50,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                errorBuilder:
+                                                                    (context,
+                                                                        error,
+                                                                        stackTrace) {
+                                                                  return Image
+                                                                      .asset(
+                                                                    _getProductImage(
+                                                                        orderItem['product_name'] ??
+                                                                            ''),
+                                                                    width: 50,
+                                                                    height: 50,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  );
+                                                                },
+                                                              )
+                                                            : Image.asset(
+                                                                _getProductImage(
+                                                                    orderItem[
+                                                                            'product_name'] ??
+                                                                        ''),
+                                                                width: 50,
+                                                                height: 50,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              );
+                                                      },
+                                                    )
+                                                  : Image.asset(
+                                                      _getProductImage(orderItem[
+                                                              'product_name'] ??
+                                                          ''),
+                                                      width: 50,
+                                                      height: 50,
+                                                      fit: BoxFit.cover),
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
@@ -523,36 +615,84 @@ class _HistoryPageState extends State<HistoryPage> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                          Text(orderItem['product_name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
-                                          // Info detail: Temperature dan Sugar saja (tanpa Size)
-                                          Builder(
-                                            builder: (context) {
-                                              final temp = orderItem['temperature']?.toString() ?? '-';
-                                              final sugar = orderItem['sugar']?.toString() ?? '-';
-                                              return Text('Temperature: $temp • Sugar: $sugar', style: TextStyle(fontSize: 12, color: Colors.grey[700], fontFamily: 'Poppins'));
-                                            },
-                                                    ),
-                                        ],
-                                                  ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                        Text('Rp. ${orderItem['price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
-                                        Text('x${orderItem['quantity']}', style: const TextStyle(fontSize: 12, color: Colors.grey, fontFamily: 'Poppins')),
-                                                    ],
+                                                  Text(
+                                                      orderItem[
+                                                              'product_name'] ??
+                                                          '-',
+                                                      style:
+                                                          const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontFamily:
+                                                                  'Poppins')),
+                                                  // Info detail: Temperature dan Sugar saja (tanpa Size)
+                                                  Builder(
+                                                    builder: (context) {
+                                                      final temp = orderItem[
+                                                                  'temperature']
+                                                              ?.toString() ??
+                                                          '-';
+                                                      final sugar = orderItem[
+                                                                  'sugar']
+                                                              ?.toString() ??
+                                                          '-';
+                                                      return Text(
+                                                          'Temperature: $temp • Sugar: $sugar',
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors
+                                                                  .grey[700],
+                                                              fontFamily:
+                                                                  'Poppins'));
+                                                    },
                                                   ),
                                                 ],
                                               ),
-                              )),
-                                  const Spacer(),
-                                  Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins')),
-                                  Text('Rp. ${item['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF084CAC), fontFamily: 'Poppins')),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                    'Rp. ${orderItem['price']}',
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Poppins')),
+                                                Text(
+                                                    'x${orderItem['quantity']}',
+                                                    style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey,
+                                                        fontFamily: 'Poppins')),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )),
                                     ],
                                   ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text('Total Amount',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins')),
+                                  Text('Rp. ${item['total_price']}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Color(0xFF084CAC),
+                                          fontFamily: 'Poppins')),
+                                ],
+                              ),
                               const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
@@ -651,32 +791,58 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: imageUrl.isNotEmpty
-                                        ? Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover)
-                                        : Image.asset(_getProductImage(orderItem != null ? orderItem['product_name'] ?? '' : ''), width: 60, height: 60, fit: BoxFit.cover),
-                                      ),
-                                  if (orderItem != null && orderItem['quantity'] > 1)
-                                        Positioned(
-                                          right: 0,
-                                          bottom: 0,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(
-                                          color: const Color.fromARGB(255, 8, 76, 172),
-                                          borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              'x${orderItem['quantity']}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Poppins',
-                                              ),
-                                            ),
+                                        ? Image.network(imageUrl,
+                                            width: 60,
+                                            height: 60,
+                                            fit: BoxFit.cover, errorBuilder:
+                                                (context, error, stackTrace) {
+                                            print(
+                                                'Error loading image: $imageUrl, Error: $error');
+                                            return Image.asset(
+                                              _getProductImage(orderItem != null
+                                                  ? orderItem['product_name'] ??
+                                                      ''
+                                                  : ''),
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            );
+                                          })
+                                        : Image.asset(
+                                            _getProductImage(orderItem != null
+                                                ? orderItem['product_name'] ??
+                                                    ''
+                                                : ''),
+                                            width: 60,
+                                            height: 60,
+                                            fit: BoxFit.cover),
+                                  ),
+                                  if (orderItem != null &&
+                                      orderItem['quantity'] > 1)
+                                    Positioned(
+                                      right: 0,
+                                      bottom: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              255, 8, 76, 172),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          'x${orderItem['quantity']}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Poppins',
                                           ),
                                         ),
-                                    ],
-                                  ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                               const SizedBox(width: 12),
                               // Info kiri (nama, tanggal, jam, size)
                               Expanded(
