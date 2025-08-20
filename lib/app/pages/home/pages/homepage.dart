@@ -81,44 +81,109 @@ class HomePage extends GetView<HomeController> {
                           ? const Center(
                               child: Text('No promo available',
                                   style: TextStyle(color: Colors.white)))
-                          : ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, bottom: 20),
-                              itemCount: controller.promoCards.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 16),
-                              itemBuilder: (context, index) {
-                                final promo = controller.promoCards[index];
-                                return Container(
-                                  width: 304,
-                                  height: 130,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    image: promo['image'] != null &&
-                                            promo['image']
-                                                .toString()
-                                                .startsWith('http')
-                                        ? DecorationImage(
-                                            image: NetworkImage(promo['image']),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
+                          : Column(
+                              children: [
+                                Expanded(
+                                  child: PageView.builder(
+                                    controller: controller.pageController,
+                                    itemCount: controller.promoCards.length,
+                                    itemBuilder: (context, index) {
+                                      final promo =
+                                          controller.promoCards[index];
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 5),
+                                            ),
+                                          ],
+                                          image: promo['image'] != null &&
+                                                  promo['image']
+                                                      .toString()
+                                                      .startsWith('http')
+                                              ? DecorationImage(
+                                                  image: NetworkImage(
+                                                      promo['image']),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Stack(
+                                            children: [
+                                              // Background image
+                                              if (promo['image'] != null &&
+                                                  promo['image']
+                                                      .toString()
+                                                      .startsWith('http'))
+                                                Positioned.fill(
+                                                  child: Image.network(
+                                                    promo['image'],
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              // Gradient overlay for better text readability
+                                              Positioned.fill(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                      colors: [
+                                                        Colors.black
+                                                            .withOpacity(0.3),
+                                                        Colors.black
+                                                            .withOpacity(0.1),
+                                                        Colors.transparent,
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              // Content removed - no title display
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [],
-                                    ),
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    controller.promoCards.length,
+                                    (index) => Obx(() => Container(
+                                          width: 10,
+                                          height: 10,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: controller
+                                                        .currentPage.value ==
+                                                    index
+                                                ? Colors.white
+                                                : Colors.white.withOpacity(0.4),
+                                          ),
+                                        )),
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             )),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

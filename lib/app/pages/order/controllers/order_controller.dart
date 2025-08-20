@@ -13,13 +13,13 @@ class OrderController extends GetxController {
 
   double get totalPrice => cartController.total;
 
-  final RxString deliveryAddress = 'Campaign Coffee'.obs;
+  final RxString deliveryAddress = 'Jl. Kpg Sutoyo'.obs;
   final RxString deliveryAddressDetail =
-      'Campaign Coffee - Jl. Bestito No.80, Gebog, Kabupaten Kudus'.obs;
+      'Kpg. Sutoyo No. 620, Bilzen, Tanjungbalai'.obs;
   final RxString deliveryAddressNote = ''.obs;
   final RxString pickupAddress = 'Campaign Coffee Shop'.obs;
   final RxString pickupAddressDetail =
-      'Campaign Coffee - Jl. Bestito No.80, Gebog, Kabupaten Kudus'.obs;
+      'Jl. Raya Serpong No. 8A, Serpong, Tangerang Selatan'.obs;
   final RxString paymentMethod = 'E-Wallet'.obs;
   final RxString orderNote = ''.obs;
   final RxList<Map<String, dynamic>> orderHistory =
@@ -366,7 +366,7 @@ class OrderController extends GetxController {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-      if (token == null) return;
+      if (token == null) return;  
       final response = await http.get(
         Uri.parse('https://campaign.rplrus.com/api/orders'),
         headers: {'Authorization': 'Bearer $token'},

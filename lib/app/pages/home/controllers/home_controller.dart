@@ -4,6 +4,7 @@ import '../../menu/services/product_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/material.dart';
 
 class HomeController extends GetxController {
   final ProductService _productService = ProductService();
@@ -15,13 +16,32 @@ class HomeController extends GetxController {
   final RxList<Map<String, dynamic>> promoCards = <Map<String, dynamic>>[].obs;
   final RxList<ProductModel> recommendedProducts = <ProductModel>[].obs;
 
+  // Carousel controller
+  late PageController pageController;
+  final RxInt currentPage = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
+    pageController = PageController(viewportFraction: 0.85);
+
+    // Add listener for page changes
+    pageController.addListener(() {
+      if (pageController.page != null) {
+        currentPage.value = pageController.page!.round();
+      }
+    });
+
     fetchUserName();
     fetchPromos();
     fetchFeaturedProducts();
     fetchRecommendedProducts();
+  }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
   }
 
   Future<void> fetchUserName() async {
