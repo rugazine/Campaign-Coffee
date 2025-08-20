@@ -159,6 +159,34 @@ class LoginPage extends GetView<LoginController> {
                             ),
                           ),
                         )),
+                    Obx(() => controller.passwordError.value.isNotEmpty
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, left: 16.0),
+                            child: Text(
+                              controller.passwordError.value,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink()),
+                    Obx(() => controller.emailError.value.isNotEmpty
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, left: 16.0),
+                            child: Text(
+                              controller.emailError.value,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink()),
                     SizedBox(height: 14),
                     Align(
                       alignment: Alignment.centerRight,
@@ -224,54 +252,11 @@ class LoginPage extends GetView<LoginController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 90),
-                    const Center(
-                      child: Text(
-                        'Or continue with',
-                        style: TextStyle(
-                          color: mainBlue,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _socialLoginButton('assets/images/google.png'),
-                        const SizedBox(width: 20),
-                      ],
-                    ),
                   ],
                 ),
               ),
             ),
           ),
         ));
-  }
-
-  Widget _socialLoginButton(String iconPath) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Image.asset(
-        iconPath,
-        height: 24,
-        width: 24,
-      ),
-    );
   }
 }

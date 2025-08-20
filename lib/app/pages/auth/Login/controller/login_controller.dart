@@ -14,8 +14,31 @@ class LoginController extends GetxController {
   final isPasswordVisible = false.obs;
   final formKey = GlobalKey<FormState>().obs;
 
-  void setEmail(String value) => email.value = value;
-  void setPassword(String value) => password.value = value;
+  // Field-specific error messages
+  var emailError = ''.obs;
+  var passwordError = ''.obs;
+
+  // Clear all errors
+  void clearErrors() {
+    emailError.value = '';
+    passwordError.value = '';
+  }
+
+  void setEmail(String value) {
+    email.value = value;
+    // Clear error when user starts typing
+    if (emailError.value.isNotEmpty) {
+      emailError.value = '';
+    }
+  }
+
+  void setPassword(String value) {
+    password.value = value;
+    // Clear error when user starts typing
+    if (passwordError.value.isNotEmpty) {
+      passwordError.value = '';
+    }
+  }
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -38,6 +61,9 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
+    // Clear previous errors
+    clearErrors();
+
     if (formKey.value.currentState?.validate() ?? false) {
       try {
         isLoading.value = true;
@@ -71,25 +97,35 @@ class LoginController extends GetxController {
 
           Get.offAllNamed(AppRoutes.bottomnav);
         } else {
-          Get.snackbar(
-            'Login Gagal',
-            data['message'] ?? 'Email atau password salah',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          // Handle login errors
+          if (data['data'] != null && data['data']['errors'] != null) {
+            final errors = data['data']['errors'];
+
+            if (errors['email'] != null) {
+              emailError.value = errors['email'][0];
+            }
+            if (errors['password'] != null) {
+              passwordError.value = errors['password'][0];
+            }
+          } else if (data['message'] != null) {
+            // Check if it's a general login error
+            String message = data['message'].toString();
+            if (message.toLowerCase().contains('email') ||
+                message.toLowerCase().contains('password') ||
+                message.toLowerCase().contains('credentials')) {
+              emailError.value = 'Email atau password salah';
+            } else {
+              emailError.value = message;
+            }
+          } else {
+            emailError.value = 'Email atau password salah';
+          }
         }
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Terjadi kesalahan: ${e.toString()}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        emailError.value = 'Terjadi kesalahan: ${e.toString()}';
       } finally {
         isLoading.value = false;
-   }
-}
-}
+      }
+    }
+  }
 }

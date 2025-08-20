@@ -54,6 +54,19 @@ class RegisterPage extends StatelessWidget {
                   prefixIcon: Icons.person_outline,
                   controller: registerController.usernameController,
                 ),
+                Obx(() => registerController.usernameError.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                        child: Text(
+                          registerController.usernameError.value,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
                 const SizedBox(height: 16),
 
                 _buildTextField(
@@ -61,6 +74,19 @@ class RegisterPage extends StatelessWidget {
                   prefixIcon: Icons.email_outlined,
                   controller: registerController.emailController,
                 ),
+                Obx(() => registerController.emailError.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                        child: Text(
+                          registerController.emailError.value,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
                 const SizedBox(height: 16),
 
                 _buildTextField(
@@ -69,6 +95,19 @@ class RegisterPage extends StatelessWidget {
                   isPassword: true,
                   controller: registerController.passwordController,
                 ),
+                Obx(() => registerController.passwordError.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                        child: Text(
+                          registerController.passwordError.value,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
                 const SizedBox(height: 16),
 
                 _buildTextField(
@@ -77,6 +116,20 @@ class RegisterPage extends StatelessWidget {
                   isPassword: true,
                   controller: registerController.confirmPasswordController,
                 ),
+                Obx(() => registerController
+                        .confirmPasswordError.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                        child: Text(
+                          registerController.confirmPasswordError.value,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
                 const SizedBox(height: 16),
 
                 _buildTextField(
@@ -84,6 +137,19 @@ class RegisterPage extends StatelessWidget {
                   prefixIcon: Icons.phone_outlined,
                   controller: registerController.phoneController,
                 ),
+                Obx(() => registerController.phoneError.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                        child: Text(
+                          registerController.phoneError.value,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
                 const SizedBox(height: 60),
 
                 // Next Button
@@ -100,8 +166,8 @@ class RegisterPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(8, 76, 172, 1),
                         elevation: 20,
-                        shadowColor:
-                            const Color.fromRGBO(8, 76, 172, 1).withOpacity(0.3),
+                        shadowColor: const Color.fromRGBO(8, 76, 172, 1)
+                            .withOpacity(0.3),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -211,7 +277,7 @@ class RegisterPage extends StatelessWidget {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
-     ),
-);
-}
+      ),
+    );
+  }
 }
