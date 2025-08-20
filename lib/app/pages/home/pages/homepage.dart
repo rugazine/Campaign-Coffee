@@ -75,8 +75,6 @@ class HomePage extends GetView<HomeController> {
                         ],
                       ),
                     ),
-
-                    // PROMO
                     SizedBox(
                       height: 160,
                       child: Obx(() => controller.promoCards.isEmpty
@@ -114,18 +112,7 @@ class HomePage extends GetView<HomeController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(promo['tag'] ?? '',
-                                            style: const TextStyle(
-                                                color: Colors.blue,
-                                                fontWeight: FontWeight.bold)),
-                                        const SizedBox(height: 4),
-                                        Text(promo['title'] ?? '',
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                      ],
+                                      children: [],
                                     ),
                                   ),
                                 );
@@ -254,36 +241,7 @@ class HomePage extends GetView<HomeController> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: mainBlue,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'Promo',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontFamily: fontPoppins,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Buy one get\none FREE',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: fontPoppins,
-                  ),
-                ),
-              ],
+              children: [],
             ),
           ),
         ],
@@ -353,18 +311,20 @@ class HomePage extends GetView<HomeController> {
     String? description,
   }) {
     final bool isOutOfStock = stock <= 0;
-    
+
     return GestureDetector(
-      onTap: isOutOfStock ? null : () {
-        Get.to(() => DetailPage(productData: {
-              'id': id,
-              'name': name,
-              'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
-              'image': image,
-              'stock': stock,
-              'description': description,
-            }));
-      },
+      onTap: isOutOfStock
+          ? null
+          : () {
+              Get.to(() => DetailPage(productData: {
+                    'id': id,
+                    'name': name,
+                    'price': int.parse(price.replaceAll(RegExp(r'[^0-9]'), '')),
+                    'image': image,
+                    'stock': stock,
+                    'description': description,
+                  }));
+            },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -449,7 +409,8 @@ class HomePage extends GetView<HomeController> {
                       color: isOutOfStock ? Colors.red[400] : Colors.grey[600],
                       fontSize: 12,
                       fontFamily: fontPoppins,
-                      fontWeight: isOutOfStock ? FontWeight.w500 : FontWeight.normal,
+                      fontWeight:
+                          isOutOfStock ? FontWeight.w500 : FontWeight.normal,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -460,14 +421,18 @@ class HomePage extends GetView<HomeController> {
                         price,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isOutOfStock ? Colors.grey[500] : const Color.fromARGB(255, 8, 76, 172),
+                          color: isOutOfStock
+                              ? Colors.grey[500]
+                              : const Color.fromARGB(255, 8, 76, 172),
                           fontFamily: fontPoppins,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: isOutOfStock ? Colors.grey[400] : const Color.fromARGB(255, 8, 76, 172),
+                          color: isOutOfStock
+                              ? Colors.grey[400]
+                              : const Color.fromARGB(255, 8, 76, 172),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(

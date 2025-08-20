@@ -12,9 +12,7 @@ class HomeController extends GetxController {
   final RxString error = ''.obs;
   final RxString userName = ''.obs;
 
-  // PROMO
   final RxList<Map<String, dynamic>> promoCards = <Map<String, dynamic>>[].obs;
-  // RECOMMENDATION
   final RxList<ProductModel> recommendedProducts = <ProductModel>[].obs;
 
   @override
@@ -55,16 +53,18 @@ class HomeController extends GetxController {
 
   Future<void> fetchPromos() async {
     try {
-      final response = await http.get(Uri.parse('https://campaign.rplrus.com/api/promotions'));
+      final response = await http
+          .get(Uri.parse('https://campaign.rplrus.com/api/promotions'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['data'] is List) {
           promoCards.value = List<Map<String, dynamic>>.from(
             data['data'].map((promo) => {
-              'title': promo['title'] ?? '',
-              'tag': 'Promo',
-              'image': promo['image'] != null ? promo['image'] : 'assets/images/banner.png',
-            }),
+                  'title': promo['title'] ?? '',
+                  'image': promo['image'] != null
+                      ? promo['image']
+                      : 'assets/images/banner.png',
+                }),
           );
         }
       }
