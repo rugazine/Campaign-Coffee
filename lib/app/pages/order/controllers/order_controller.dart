@@ -13,13 +13,13 @@ class OrderController extends GetxController {
 
   double get totalPrice => cartController.total;
 
-  final RxString deliveryAddress = 'Jl. Kpg Sutoyo'.obs;
+  final RxString deliveryAddress = 'Campaign Coffee'.obs;
   final RxString deliveryAddressDetail =
-      'Kpg. Sutoyo No. 620, Bilzen, Tanjungbalai'.obs;
+      'Campaign Coffee - Jl. Bestito No.80, Gebog, Kabupaten Kudus'.obs;
   final RxString deliveryAddressNote = ''.obs;
   final RxString pickupAddress = 'Campaign Coffee Shop'.obs;
   final RxString pickupAddressDetail =
-      'Jl. Raya Serpong No. 8A, Serpong, Tangerang Selatan'.obs;
+      'Campaign Coffee - Jl. Bestito No.80, Gebog, Kabupaten Kudus'.obs;
   final RxString paymentMethod = 'E-Wallet'.obs;
   final RxString orderNote = ''.obs;
   final RxList<Map<String, dynamic>> orderHistory =
